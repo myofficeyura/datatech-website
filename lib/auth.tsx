@@ -18,7 +18,7 @@ const AuthCtx = createContext<Ctx>({ user: null, ready: false, error: null, sign
 export const refCodeFor = (uid: string) => uid.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8).toLowerCase();
 
 const DEMO_USER: Profile = {
-  uid: "demo-user", name: "Nümunə Üzv", email: "numune@" + (ALLOWED_DOMAIN || "beu.edu.az"), faculty: "Kompüter mühəndisliyi", year: "2",
+  uid: "demo-user", name: "Nümunə Üzv", email: "numune@" + (ALLOWED_DOMAIN || "std.beu.edu.az"), faculty: "Kompüter mühəndisliyi", year: "2",
   points: 1240, badges: ["first-step", "info-day", "inviter"], refCode: "numune", isAdmin: true,
 };
 
@@ -70,7 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const f = fb();
     if (!f) { try { localStorage.setItem("dt-demo-signed", "1"); } catch {} setUser(DEMO_USER); return; }
     const p = new GoogleAuthProvider();
-    if (ALLOWED_DOMAIN) p.setCustomParameters({ hd: ALLOWED_DOMAIN, prompt: "select_account" });
+    // hd işarəsi qoymuruq: adminlər Gmail ilə də daxil olmalıdır. Domen yoxlaması isAllowedEmail-dədir.
+    p.setCustomParameters({ prompt: "select_account" });
     try { await signInWithPopup(f.auth, p); } catch (e) { setError((e as Error).message); }
   };
   const signOut = async () => {

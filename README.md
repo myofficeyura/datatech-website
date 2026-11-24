@@ -28,7 +28,7 @@ npm run dev
 1. console.firebase.google.com → yeni layihə.
 2. **Authentication → Sign-in method → Google** aktiv et. **Settings → Authorized domains**-ə Vercel domenini əlavə et.
 3. **Firestore Database** yarat (production mode).
-4. `firestore.rules` faylındakı domeni (`beu.edu.az`) real BMU domeni ilə yoxla və qaydaları Console → Firestore → Rules-a yapışdır.
+4. `firestore.rules` faylındakı domeni (`std.beu.edu.az`) real BMU domeni ilə yoxla və qaydaları Console → Firestore → Rules-a yapışdır.
 5. Admin etmək üçün Firestore-da `admins` kolleksiyası yarat, sənəd id-si adminin e-poçtu olsun (məs. `admins/yusif@...`). Eyni e-poçtları `NEXT_PUBLIC_ADMIN_EMAILS`-ə də yaz.
 6. Project settings → Your apps → Web app → konfiqurasiyanı `.env.local` / Vercel-ə köçür.
 

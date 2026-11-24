@@ -28,5 +28,6 @@ export const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split("
 export function isAllowedEmail(email?: string | null) {
   if (!email) return false;
   if (!ALLOWED_DOMAIN) return true;
+  if (ADMIN_EMAILS.includes(email.toLowerCase())) return true; // admin başqa domendən ola bilər
   return email.toLowerCase().endsWith("@" + ALLOWED_DOMAIN) || email.toLowerCase().endsWith("." + ALLOWED_DOMAIN);
 }
