@@ -116,7 +116,7 @@ export const POINTS = {
 };
 
 // Qeydiyyat formasındakı fakültələr. Boşdursa, sahə sərbəst mətn olur.
-export const FACULTIES: string[] = [];
+export const FACULTIES: string[] = ["İKT", "Yeni korpus", "İBF", "Dillər"];
 
 export const NAV = {
   main: [
