@@ -18,7 +18,7 @@ export const SITE = {
 
 // Rəqəmlər: Firestore-da `stats/public` sənədi varsa oradan oxunur, yoxsa bunlar göstərilir.
 // 0 olan rəqəm saytda göstərilmir.
-export const STATS = { members: 0, events: 0, faculties: 0, rating: 0 };
+export const STATS = { members: 165, events: 1, faculties: 1, rating: 0 };
 
 export type Member = { id: string; name: string; role: L; bio: L; photo: string; linkedin?: string };
 export const TEAM: Member[] = [
