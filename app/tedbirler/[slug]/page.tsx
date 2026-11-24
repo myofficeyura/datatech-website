@@ -21,7 +21,7 @@ export default function EventPage({ params }: { params: Promise<{ slug: string }
         <div className="panel box stack">
           <div style={{ display: "flex", gap: 16, alignItems: "center" }}><DateBox iso={e.date} /><h1 style={{ fontSize: "clamp(26px,3.6vw,38px)" }}>{tr(e.title)}</h1></div>
           <div className="ev" style={{ padding: 0 }}><div className="meta">
-            <span><Icon name="clock" />{fmtDate(e.date, lang)}, {e.time}</span>
+            <span><Icon name="clock" />{fmtDate(e.date, lang)}{e.time && `, ${e.time}`}</span>
             <span><Icon name="pin" />{tr(e.place)}</span>
           </div></div>
           <p style={{ fontSize: 16.5, lineHeight: 1.7 }}>{tr(e.desc)}</p>
@@ -30,8 +30,8 @@ export default function EventPage({ params }: { params: Promise<{ slug: string }
         {e.past ? <RateEvent e={e} /> : (
           <div className="panel box stack">
             <h3>{az ? "Qeydiyyat" : "Registration"}</h3>
-            <div><div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}><span className="muted">{t("seats")}</span><span className="num">{e.capacity - e.registered} / {e.capacity}</span></div>
-              <div className="seats"><i style={{ width: `${Math.round((e.registered / e.capacity) * 100)}%` }} /></div></div>
+            {e.capacity > 0 && <div><div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}><span className="muted">{t("seats")}</span><span className="num">{e.capacity - e.registered} / {e.capacity}</span></div>
+              <div className="seats"><i style={{ width: `${Math.round((e.registered / e.capacity) * 100)}%` }} /></div></div>}
             <RegButton slug={e.slug} full />
             <p className="note">{az ? "Qeydiyyat üçün BMU hesabınla daxil olmalısan. Tədbirdə iştirak +200 xal verir." : "Sign in with your BEU account to register. Attending gives +200 points."}</p>
             <Link className="btn sec sm" href="/komanda-axtar">{t("teamfinder")}</Link>

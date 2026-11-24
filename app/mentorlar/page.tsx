@@ -3,7 +3,7 @@ import { useState } from "react";
 import { MENTORS } from "@/lib/data";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import { DemoBanner, PageHead, SignInGate, SubmitRow, useSubmit } from "@/components/ui";
+import { DemoBanner, Empty, PageHead, SignInGate, SubmitRow, useSubmit } from "@/components/ui";
 
 export default function Mentors() {
   const { tr, t, lang } = useLang();
@@ -14,6 +14,7 @@ export default function Mentors() {
   return (
     <>
       <PageHead eyebrow={t("mentors")} title={az ? "1:1 mentor görüşü" : "Book a 1:1 mentor"} lead={az ? "Mentoru və vaxtı seç, mövzunu yaz. Mentor təsdiq edəndə sənə yazacaq. Görüşlər 30 dəqiqədir." : "Pick a mentor and a slot, describe your topic. The mentor will confirm. Sessions are 30 minutes."} />
+      {MENTORS.length === 0 && <Empty text={{ az: "Mentor vaxtları tezliklə əlavə olunacaq.", en: "Mentor slots will be added soon." }} />}
       <div className="grid3">
         {MENTORS.map((m) => (
           <article key={m.id} className="panel box stack">

@@ -8,7 +8,8 @@ import { Icon } from "@/components/Icon";
 export default function Home() {
   const { t, tr, lang } = useLang();
   const next = upcomingEvents()[0];
-  const info = EVENTS.find((e) => e.slug === "info-gun")!;
+  const info = EVENTS.find((e) => e.slug === "info-gun");
+  const statItems = ([["members", STATS.members, "+"], ["eventsN", STATS.events, ""], ["faculties", STATS.faculties, ""]] as const).filter(([, v]) => v > 0);
   const az = lang === "az";
   return (
     <>
@@ -25,10 +26,10 @@ export default function Home() {
             <Link className="btn pri" href="/qosul">{t("join")}</Link>
             <Link className="btn sec" href="/tedbirler">{az ? "Tədbirlərə bax" : "See events"}</Link>
           </div>
-          <div className="who">
+          {STATS.members > 0 && <div className="who">
             <div className="faces">{TEAM.slice(1, 5).map((m) => <img key={m.id} src={m.photo} alt="" width={32} height={32} />)}</div>
             <span><b className="num" style={{ color: "var(--fg)" }}>{STATS.members}+</b> {az ? "tələbə artıq bizimlədir" : "students already joined"}</span>
-          </div>
+          </div>}
         </div>
         {next && (
           <article className="panel hero-card rise" style={{ animationDelay: ".12s" }}>
@@ -39,19 +40,17 @@ export default function Home() {
             </div>
             <p className="muted" style={{ fontSize: 14 }}>{tr(next.desc)}</p>
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}><span className="muted">{t("seats")}</span><span className="num">{next.capacity - next.registered} / {next.capacity}</span></div>
-              <div className="seats"><i style={{ width: `${Math.round((next.registered / next.capacity) * 100)}%` }} /></div>
+              {next.capacity > 0 && <><div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}><span className="muted">{t("seats")}</span><span className="num">{next.capacity - next.registered} / {next.capacity}</span></div>
+              <div className="seats"><i style={{ width: `${Math.round((next.registered / next.capacity) * 100)}%` }} /></div></>}
             </div>
             <RegButton slug={next.slug} full />
           </article>
         )}
       </div>
 
-      <div className="stats">
-        <div className="panel stat"><div className="num"><CountUp to={STATS.members} /><small>+</small></div><p>{t("members")}</p></div>
-        <div className="panel stat"><div className="num"><CountUp to={STATS.events} /></div><p>{t("eventsN")}</p></div>
-        <div className="panel stat"><div className="num"><CountUp to={STATS.faculties} /></div><p>{t("faculties")}</p></div>
-      </div>
+      {statItems.length > 0 && <div className="stats">
+        {statItems.map(([k, v, suf]) => <div key={k} className="panel stat"><div className="num"><CountUp to={v} />{suf && <small>{suf}</small>}</div><p>{t(k)}</p></div>)}
+      </div>}
 
       <section>
         <SecHead eyebrow={t("about")} title={az ? "Nə edirik" : "What we do"} href="/haqqimizda" linkText={t("seeAll")} />
@@ -72,17 +71,17 @@ export default function Home() {
         </div>
       </section>
 
-      <section>
+      {info?.gallery && info.gallery.length >= 2 && <section>
         <SecHead eyebrow={az ? "Keçmiş tədbir" : "Past event"} title={tr(info.title)} href="/qalereya" linkText={az ? "Qalereya →" : "Gallery →"} />
         <div className="infoday">
           <figure><img src={info.gallery![0]} alt={az ? "İnfo gündə təqdimat" : "Info day talk"} loading="lazy" /></figure>
           <figure><img src={info.gallery![1]} alt={az ? "İnfo gündə komanda üzvü" : "Team member at info day"} loading="lazy" /></figure>
           <div className="panel idtext">
             <div><span className="tag">{fmtDate(info.date, lang)}</span><h3 style={{ fontSize: 22, marginTop: 12 }}>{az ? "İlk görüşümüz" : "Our first meetup"}</h3><p className="muted" style={{ marginTop: 8 }}>{tr(info.desc)}</p></div>
-            <div><div className="stars" aria-label="5/5">★★★★★</div><p style={{ fontWeight: 600, marginTop: 4 }}>{az ? "Hər iştirakçı 5 ulduz verdi" : "Every attendee gave 5 stars"}</p></div>
+            {info.rating ? <div><div className="stars" aria-label={`${info.rating}/5`}>★★★★★</div><p style={{ fontWeight: 600, marginTop: 4 }}>{az ? `Orta rəy: ${info.rating}` : `Average rating: ${info.rating}`}</p></div> : null}
           </div>
         </div>
-      </section>
+      </section>}
 
       <section>
         <SecHead eyebrow={t("team")} title={az ? "İdarə heyəti" : "Board"} href="/komanda" linkText={t("seeAll")} />

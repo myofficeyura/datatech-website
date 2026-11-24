@@ -4,7 +4,7 @@ import { QUIZ, POINTS } from "@/lib/data";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { getRecord, setRecord } from "@/lib/store";
-import { PageHead, SignInGate } from "@/components/ui";
+import { Empty, PageHead, SignInGate } from "@/components/ui";
 
 function Quiz() {
   const { tr, lang } = useLang();
@@ -52,8 +52,8 @@ export default function Page() {
   const { t, lang } = useLang();
   return (
     <>
-      <PageHead eyebrow={t("quiz")} title={lang === "az" ? "Bu həftənin quizi" : "This week's quiz"} lead={lang === "az" ? "5 sual, data və AI əsasları. Hər həftə yenilənir." : "5 questions on data and AI basics. New every week."} />
-      <SignInGate><Quiz /></SignInGate>
+      <PageHead eyebrow={t("quiz")} title={lang === "az" ? "Bu həftənin quizi" : "This week's quiz"} lead={lang === "az" ? "Data və AI əsasları. Hər həftə yenilənir." : "Data and AI basics. New every week."} />
+      {QUIZ.questions.length ? <SignInGate><Quiz /></SignInGate> : <Empty text={{ az: "İlk quiz tezliklə.", en: "The first quiz is coming soon." }} />}
     </>
   );
 }

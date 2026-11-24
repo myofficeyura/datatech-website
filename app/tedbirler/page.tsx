@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLang, fmtDate } from "@/lib/i18n";
-import { EventCard, PageHead, pastEvents, upcomingEvents } from "@/components/ui";
+import { Empty, EventCard, PageHead, pastEvents, upcomingEvents } from "@/components/ui";
 import { RateEvent } from "@/components/RateEvent";
 
 export default function Events() {
@@ -18,7 +18,7 @@ export default function Events() {
         </div>
       </PageHead>
       {tab === "up" ? (
-        <div className="evgrid" style={{ marginTop: 0 }}>{upcomingEvents().map((e) => <EventCard key={e.slug} e={e} />)}</div>
+        upcomingEvents().length ? <div className="evgrid" style={{ marginTop: 0 }}>{upcomingEvents().map((e) => <EventCard key={e.slug} e={e} />)}</div> : <Empty text={{ az: "Yeni tədbirlər tezliklə elan olunacaq.", en: "New events will be announced soon." }} />
       ) : (
         <div className="stack">
           {pastEvents().map((e) => (

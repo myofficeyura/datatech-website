@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ROADMAP_90, ROADMAP_YEAR, type RoadItem } from "@/lib/data";
 import { fmtDate, useLang } from "@/lib/i18n";
-import { PageHead } from "@/components/ui";
+import { Empty, PageHead } from "@/components/ui";
 
 const TAG = { event: ["Tədbir", "Event", ""], learn: ["Təhsil", "Learning", " g"], growth: ["İnkişaf", "Growth", ""], milestone: ["Mərhələ", "Milestone", " a"] } as const;
 
@@ -10,6 +10,7 @@ function Timeline({ items }: { items: RoadItem[] }) {
   const { tr, lang } = useLang();
   const today = new Date().toISOString().slice(0, 10);
   const nextIdx = items.findIndex((i) => i.date >= today);
+  if (!items.length) return <Empty />;
   return (
     <div className="timeline">
       {items.map((it, i) => {
@@ -36,7 +37,7 @@ export default function Roadmap() {
   return (
     <>
       <PageHead eyebrow={t("roadmap")} title={az ? "Hara gedirik" : "Where we're going"}
-        lead={az ? "Tarixli plan: ilk 90 gün (25 noyabr 2026 – 22 fevral 2027) və 1 illik hədəflər (noyabr 2027-yə qədər)." : "Dated plan: the first 90 days (25 Nov 2026 – 22 Feb 2027) and one-year goals (to Nov 2027)."}>
+        lead={az ? "Tarixli plan: ilk 90 gün və 1 illik hədəflər." : "Dated plan: the first 90 days and one-year goals."}>
         <div className="tabs" role="tablist" style={{ alignSelf: "flex-start", marginTop: 8 }}>
           <button type="button" className={tab === "90" ? "on" : ""} onClick={() => setTab("90")}>{az ? "90 gün" : "90 days"}</button>
           <button type="button" className={tab === "year" ? "on" : ""} onClick={() => setTab("year")}>{az ? "1 il" : "1 year"}</button>

@@ -23,7 +23,7 @@ export default function About() {
         <div className="panel box stack">
           <h3 style={{ fontSize: 20 }}>{az ? "Rəqəmlərlə" : "In numbers"}</h3>
           <div className="list">
-            {[[az ? "Üzv" : "Members", `${STATS.members}+`], [az ? "Keçirilən tədbir" : "Events held", STATS.events], [az ? "Fakültə" : "Faculties", STATS.faculties], [az ? "İnfo gün reytinqi" : "Info day rating", "5.0 ★"]].map(([k, v]) => (
+            {([[az ? "Üzv" : "Members", STATS.members, "+"], [az ? "Keçirilən tədbir" : "Events held", STATS.events, ""], [az ? "Fakültə" : "Faculties", STATS.faculties, ""], [az ? "Orta rəy" : "Avg rating", STATS.rating, " ★"]] as const).filter(([, n]) => n > 0).map(([k, n, suf]) => [k, `${n}${suf}`]).map(([k, v]) => (
               <div className="row" key={String(k)}><div className="grow"><b>{k}</b></div><span className="pts">{v}</span></div>
             ))}
           </div>

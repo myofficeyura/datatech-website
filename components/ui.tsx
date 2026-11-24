@@ -9,6 +9,11 @@ import { getRecord, setRecord, listRecords, type Rec } from "@/lib/store";
 import { Icon } from "./Icon";
 import { useToast } from "./Shell";
 
+export function Empty({ text }: { text?: L | string }) {
+  const { tr, lang } = useLang();
+  return <div className="panel box" style={{ textAlign: "center", padding: "36px 20px" }}><p className="muted">{text ? tr(text) : lang === "az" ? "Tezliklə burada olacaq." : "Coming soon."}</p></div>;
+}
+
 export function PageHead({ eyebrow, title, lead, children }: { eyebrow?: L | string; title: L | string; lead?: L | string; children?: ReactNode }) {
   const { tr } = useLang();
   return (
@@ -100,12 +105,12 @@ export function EventCard({ e }: { e: EventItem }) {
       </div>
       <Link href={`/tedbirler/${e.slug}`} style={{ textDecoration: "none" }}><h3>{tr(e.title)}</h3></Link>
       <div className="meta">
-        <span><Icon name="clock" />{fmtDate(e.date, lang, { day: "numeric", month: "long" })}, {e.time}</span>
+        <span><Icon name="clock" />{fmtDate(e.date, lang, { day: "numeric", month: "long" })}{e.time && `, ${e.time}`}</span>
         <span><Icon name="pin" />{tr(e.place)}</span>
       </div>
       <div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}><span className="muted">{t("seats")}</span><span className="num">{left} / {e.capacity}</span></div>
-        <div className="seats"><i style={{ width: `${Math.round((e.registered / e.capacity) * 100)}%` }} /></div>
+        {e.capacity > 0 && <><div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}><span className="muted">{t("seats")}</span><span className="num">{left} / {e.capacity}</span></div>
+        <div className="seats"><i style={{ width: `${Math.round((e.registered / e.capacity) * 100)}%` }} /></div></>}
       </div>
       <div className="foot">
         <Link href={`/tedbirler/${e.slug}`} className="muted" style={{ fontSize: 13, fontWeight: 600 }}>{lang === "az" ? "Ətraflı" : "Details"}</Link>
@@ -118,10 +123,7 @@ export function EventCard({ e }: { e: EventItem }) {
 export const upcomingEvents = () => EVENTS.filter((e) => !e.past).sort((a, b) => a.date.localeCompare(b.date));
 export const pastEvents = () => EVENTS.filter((e) => e.past).sort((a, b) => b.date.localeCompare(a.date));
 
-const SAMPLE_LB: Rec[] = [
-  ["Aynur M.", 1820], ["Murad Q.", 1655], ["Leyla H.", 1530], ["Orxan S.", 1410], ["Nərmin A.", 1365],
-  ["Kamran R.", 1290], ["Nümunə Üzv", 1240], ["Fidan İ.", 1180], ["Elçin T.", 1105], ["Günay V.", 1040],
-].map(([name, points], i) => ({ id: i === 6 ? "demo-user" : "s" + i, name, points }));
+const SAMPLE_LB: Rec[] = [];
 
 export function useLeaderboard(n = 50) {
   const [rows, setRows] = useState<Rec[] | null>(null);

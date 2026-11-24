@@ -23,12 +23,12 @@ export function RateEvent({ e }: { e: EventItem }) {
   const r = e.rating ?? 0;
   return (
     <div className="panel box" style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-      <div>
+      {r > 0 && <div>
         <h3 style={{ marginBottom: 6 }}>{lang === "az" ? "İştirakçı reytinqi" : "Attendee rating"}</h3>
         <div className="score"><span className="num">{r.toFixed(1)}</span><span className="stars">{"★".repeat(Math.round(r))}</span></div>
         {e.ratingCount ? <p className="muted" style={{ fontSize: 13 }}>{e.ratingCount} {lang === "az" ? "rəy" : "ratings"}</p> : null}
-      </div>
-      <div style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+      </div>}
+      <div style={r > 0 ? { borderTop: "1px solid var(--line)", paddingTop: 16 } : undefined}>
         <p style={{ fontWeight: 600 }}>{lang === "az" ? "Sən də qiymətləndir" : "Rate it yourself"}</p>
         <div className="rate">{[1, 2, 3, 4, 5].map((i) => <button key={i} type="button" aria-label={`${i}`} className={i <= mine ? "on" : ""} onClick={() => rate(i)}>★</button>)}</div>
         <p className="muted" style={{ fontSize: 13 }}>{msg || (lang === "az" ? "Rəy forması hər zaman açıqdır." : "Feedback is always open.")}</p>

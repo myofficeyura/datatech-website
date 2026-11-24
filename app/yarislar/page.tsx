@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { COMPETITIONS } from "@/lib/data";
 import { fmtDate, useLang } from "@/lib/i18n";
-import { PageHead } from "@/components/ui";
+import { Empty, PageHead } from "@/components/ui";
 
 export default function Competitions() {
   const { tr, t, lang } = useLang();
@@ -10,6 +10,7 @@ export default function Competitions() {
   return (
     <>
       <PageHead eyebrow={t("competitions")} title={az ? "Yarışlar və hackathonlar" : "Competitions & hackathons"} lead={az ? "Daxili yarışlar, tərəfdaşlarla hackathonlar və online yarışlar. Komandan yoxdursa, Komanda axtar bölməsindən tap." : "Internal contests, partner hackathons and online competitions. No team? Find one in the Team finder."} />
+      {COMPETITIONS.length === 0 && <Empty />}
       <div className="grid3">
         {COMPETITIONS.map((c) => {
           const ext = c.url.startsWith("http");

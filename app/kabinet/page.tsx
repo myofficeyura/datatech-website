@@ -11,12 +11,8 @@ import { BadgeGrid } from "@/components/BadgeGrid";
 import { Icon } from "@/components/Icon";
 import { useToast } from "@/components/Shell";
 
-const DEMO_CERTS: Rec[] = [{ id: "DT-2026-0042", title: "İnfo gün iştirakçısı", date: "2026-11-19" }];
-const DEMO_ACT: Rec[] = [
-  { id: "a1", note: "İnfo gün", points: 200, date: "2026-11-19" },
-  { id: "a2", note: "Rəy forması", points: 40, date: "2026-11-20" },
-  { id: "a3", note: "2 dost dəvət etdi", points: 100, date: "2026-11-22" },
-];
+const DEMO_CERTS: Rec[] = [];
+const DEMO_ACT: Rec[] = [];
 
 function Cabinet() {
   const { user, signOut } = useAuth();

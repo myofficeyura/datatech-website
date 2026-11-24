@@ -6,7 +6,7 @@ import { firebaseEnabled } from "@/lib/firebase";
 import { getRecord, type Rec } from "@/lib/store";
 import { Icon } from "@/components/Icon";
 
-const DEMO: Record<string, Rec> = { "DT-2026-0042": { id: "DT-2026-0042", name: "Nümunə Üzv", title: "İnfo gün iştirakçısı", date: "2026-11-19" } };
+const DEMO: Record<string, Rec> = {};
 
 export default function Cert({ params }: { params: Promise<{ code: string }> }) {
   const { code: raw } = use(params);

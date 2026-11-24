@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { FAQ } from "@/lib/data";
 import { useLang } from "@/lib/i18n";
-import { PageHead } from "@/components/ui";
+import { Empty, PageHead } from "@/components/ui";
 
 export default function Faq() {
   const { tr, t, lang } = useLang();
   return (
     <>
       <PageHead eyebrow={t("faq")} title={lang === "az" ? "Tez-tez verilən suallar" : "Frequently asked questions"} />
+      {FAQ.length === 0 && <Empty />}
       <div className="stack" style={{ maxWidth: 760 }}>
         {FAQ.map((f) => (
           <details key={f.q.az} className="panel box">

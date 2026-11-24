@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
+import { FACULTIES } from "@/lib/data";
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { ALLOWED_DOMAIN } from "@/lib/firebase";
 import { DemoBanner, PageHead, SignInGate, SubmitRow, useSubmit } from "@/components/ui";
 
-const FACULTIES = ["Kompüter mühəndisliyi", "İnformasiya texnologiyaları", "Data analitika", "Elektrik və elektronika", "Mexanika", "İqtisadiyyat və idarəetmə", "Kimya və biologiya", "Digər"];
 
 export default function Join() {
   const { lang, t } = useLang();
@@ -35,7 +35,7 @@ export default function Join() {
             </div>
             <div className="grid2">
               <div className="field-row"><label htmlFor="j-fac">{az ? "Fakültə" : "Faculty"}</label>
-                <select className="input" id="j-fac" name="faculty" required defaultValue="">{["", ...FACULTIES].map((f) => <option key={f} value={f} disabled={!f}>{f || (az ? "Seç" : "Choose")}</option>)}</select></div>
+                {FACULTIES.length ? <select className="input" id="j-fac" name="faculty" required defaultValue="">{["", ...FACULTIES].map((f) => <option key={f} value={f} disabled={!f}>{f || (az ? "Seç" : "Choose")}</option>)}</select> : <input className="input" id="j-fac" name="faculty" required />}</div>
               <div className="field-row"><label htmlFor="j-year">{az ? "Kurs" : "Year"}</label>
                 <select className="input" id="j-year" name="year" required defaultValue="">{["", "1", "2", "3", "4", "Magistr"].map((f) => <option key={f} value={f} disabled={!f}>{f || (az ? "Seç" : "Choose")}</option>)}</select></div>
             </div>
