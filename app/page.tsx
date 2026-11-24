@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { PARTNERS, STATS, TEAM, EVENTS } from "@/lib/data";
+import { PARTNERS, SITE, STATS, TEAM, EVENTS } from "@/lib/data";
 import { fmtDate, useLang } from "@/lib/i18n";
 import { CountUp, DateBox, RegButton, SecHead, upcomingEvents } from "@/components/ui";
 import { Icon } from "@/components/Icon";
@@ -103,7 +103,10 @@ export default function Home() {
 
       <section className="panel join">
         <div><h2>{az ? "Qoşulmağa hazırsan?" : "Ready to join?"}</h2><p>{az ? "Yalnız BMU tələbələri üçün. Qeydiyyat 1 dəqiqə çəkir." : "For BEU students only. Signing up takes a minute."}</p></div>
-        <Link className="btn" href="/qosul">{t("join")}</Link>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <Link className="btn" href="/qosul">{t("join")}</Link>
+          {SITE.whatsapp && <a className="btn" href={SITE.whatsapp} target="_blank" rel="noreferrer" style={{ background: "transparent", color: "inherit", border: "1px solid currentColor" }}>{az ? "WhatsApp qrupu" : "WhatsApp group"}</a>}
+        </div>
       </section>
 
       <footer>

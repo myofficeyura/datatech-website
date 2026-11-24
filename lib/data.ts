@@ -10,10 +10,12 @@ export const SITE = {
   founded: "2026-11-16",
   motto: "Öyrən, sına, paylaş, inkişaf et",
   // Boş qalan link/ünvan saytda göstərilmir.
-  instagram: "",
-  linkedin: "",
-  tiktok: "",
-  email: "",
+  instagram: "https://www.instagram.com/datatech.beu/",
+  linkedin: "", // yaxında
+  tiktok: "https://www.tiktok.com/@datatech.beu",
+  whatsapp: "https://chat.whatsapp.com/FtHWr7NQ4JNH20xzO15O2n",
+  handle: "@datatech.beu",
+  email: "datatech.beu@gmail.com",
 };
 
 // Rəqəmlər: Firestore-da `stats/public` sənədi varsa oradan oxunur, yoxsa bunlar göstərilir.

@@ -40,13 +40,31 @@ function useList(col: string, deps: unknown[] = []) {
   return { rows, reload };
 }
 
+// QR + ortada DataTech loqosu. "H" səviyyəli xəta korreksiyası mərkəzin ~30%-i örtülsə belə oxunmağı təmin edir.
+async function qrWithLogo(url: string) {
+  const size = 1024;
+  const canvas = document.createElement("canvas");
+  await QRCode.toCanvas(canvas, url, { margin: 2, width: size, errorCorrectionLevel: "H", color: { dark: "#0b1f4d", light: "#ffffff" } });
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return canvas.toDataURL("image/png");
+  const logo = await new Promise<HTMLImageElement | null>((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = "/img/logo-blue.png"; });
+  if (logo) {
+    const box = size * 0.22, x = (size - box) / 2, y = (size - box) / 2, rad = box * 0.18;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.roundRect(x, y, box, box, rad); ctx.fill();
+    const h = box * 0.74, w = h * (logo.width / logo.height);
+    ctx.drawImage(logo, (size - w) / 2, (size - h) / 2, w, h);
+  }
+  return canvas.toDataURL("image/png");
+}
+
 function QrTab() {
   const toast = useToast();
   const { rows, reload } = useList("links");
   const [imgs, setImgs] = useState<Record<string, string>>({});
   const origin = typeof window !== "undefined" ? location.origin : "";
   useEffect(() => {
-    rows?.forEach(async (r) => { const url = `${origin}/r/${r.id}`; const png = await QRCode.toDataURL(url, { margin: 1, width: 512 }); setImgs((m) => ({ ...m, [r.id]: png })); });
+    rows?.forEach(async (r) => { const url = `${origin}/r/${r.id}`; const png = await qrWithLogo(url); setImgs((m) => ({ ...m, [r.id]: png })); });
   }, [rows, origin]);
   const create = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,7 +84,7 @@ function QrTab() {
           <div className="field-row"><label htmlFor="q-channel">Kanal</label><select className="input" id="q-channel" name="channel">{["Afişa", "Instagram", "TikTok", "WhatsApp", "LinkedIn", "Tədbir", "Digər"].map((x) => <option key={x}>{x}</option>)}</select></div>
         </div>
         <div className="grid2">
-          <div className="field-row"><label htmlFor="q-target">Hədəf səhifə</label><select className="input" id="q-target" name="target">{["/qosul", "/", "/tedbirler", ...EVENTS.filter((e) => !e.past).map((e) => `/tedbirler/${e.slug}`), "/rey", "/quiz"].map((x) => <option key={x}>{x}</option>)}</select></div>
+          <div className="field-row"><label htmlFor="q-target">Hədəf səhifə</label><select className="input" id="q-target" name="target"><option value="@whatsapp">WhatsApp qrupu (icmaya qoşulma)</option>{["/qosul", "/", "/tedbirler", ...EVENTS.filter((e) => !e.past).map((e) => `/tedbirler/${e.slug}`), "/rey", "/quiz"].map((x) => <option key={x}>{x}</option>)}</select></div>
           <div className="field-row"><label htmlFor="q-code">Kod (boş qalsa avtomatik)</label><input className="input" id="q-code" name="code" placeholder="aktzal-dek" /></div>
         </div>
         <button className="btn pri" style={{ alignSelf: "flex-start" }}>QR yarat</button>
@@ -77,7 +95,7 @@ function QrTab() {
           {imgs[r.id] && <img src={imgs[r.id]} alt={`QR ${r.id}`} />}
           <div className="grow" style={{ flex: 1, minWidth: 180 }}>
             <b>{String(r.label)}</b>
-            <p className="note">{String(r.channel)} · /r/{r.id} → {String(r.target)}</p>
+            <p className="note">{String(r.channel)} · /r/{r.id} → {r.target === "@whatsapp" ? "WhatsApp qrupu" : String(r.target)}</p>
             <p className="num" style={{ fontSize: 22, fontWeight: 700 }}>{Number(r.hits || 0)} <span className="note">skan</span></p>
           </div>
           {imgs[r.id] && <a className="btn sec sm" href={imgs[r.id]} download={`qr-${r.id}.png`}>PNG yüklə</a>}

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { FACULTIES } from "@/lib/data";
+import { FACULTIES, SITE } from "@/lib/data";
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
@@ -25,7 +25,10 @@ export default function Join() {
           <div className="panel signin-card">
             <h2>{az ? "Xoş gəldin!" : "Welcome!"}</h2>
             <p className="muted">{az ? "Müraciətin qəbul olundu. Kabinetində xallarını və dəvət linkini görə bilərsən." : "Your application is in. See your points and invite link in your cabinet."}</p>
-            <Link className="btn pri" href="/kabinet">{t("cabinet")}</Link>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
+              {SITE.whatsapp && <a className="btn pri" href={SITE.whatsapp} target="_blank" rel="noreferrer">{az ? "WhatsApp qrupuna qoşul" : "Join the WhatsApp group"}</a>}
+              <Link className="btn sec" href="/kabinet">{t("cabinet")}</Link>
+            </div>
           </div>
         ) : (
           <form className="panel box form" onSubmit={onSubmit} style={{ maxWidth: 640 }}>
