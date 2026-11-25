@@ -1,0 +1,20 @@
+rules_version = '2';
+// BMU İcmaları ortaq saytı: şəkillər "hub/" qovluğunda saxlanılır.
+// Hamı oxuya bilər; yalnız adminlər (DataTech admins/{email} və ya hub_admins/{email}) yükləyə və silə bilər.
+// Limit: 5 MB, yalnız şəkil faylları.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isHubAdmin() {
+      return request.auth != null && (
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.token.email)) ||
+        firestore.exists(/databases/(default)/documents/hub_admins/$(request.auth.token.email.lower())));
+    }
+    match /hub/{rest=**} {
+      allow read: if true;
+      allow create, update: if isHubAdmin()
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if isHubAdmin();
+    }
+  }
+}
