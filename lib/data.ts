@@ -20,7 +20,7 @@ export const SITE = {
 
 // Rəqəmlər: Firestore-da `stats/public` sənədi varsa oradan oxunur, yoxsa bunlar göstərilir.
 // 0 olan rəqəm saytda göstərilmir.
-export const STATS = { members: 165, events: 1, faculties: 1, rating: 0 };
+export const STATS = { members: 165, events: 1, faculties: 1, rating: 5 };
 
 export type Member = { id: string; name: string; role: L; bio: L; photo: string; linkedin?: string };
 export const TEAM: Member[] = [
@@ -61,10 +61,11 @@ export type EventItem = {
   gallery?: string[]; sample?: boolean;
 };
 export const EVENTS: EventItem[] = [
-  { slug: "info-gun", title: l("İnfo gün", "Info day"), date: "2026-11-19", time: "",
-    place: l("BMU", "BEU"), type: "info", capacity: 0, registered: 0, past: true,
-    gallery: ["/img/gallery/infoday-podium.webp", "/img/gallery/infoday-seated.webp"],
-    desc: l("DataTech-in ilk açıq görüşü.", "DataTech's first open meetup.") },
+  { slug: "info-gun", title: l("İnfo gün", "Info day"), date: "2026-11-19", time: "12:00–13:00",
+    place: l("BMU", "BEU"), type: "info", capacity: 0, registered: 0, past: true, rating: 5.0,
+    gallery: ["/img/gallery/infoday-speaker.webp", "/img/gallery/infoday-audience.webp", "/img/gallery/infoday-podium.webp", "/img/gallery/infoday-seated.webp"],
+    desc: l("DataTech-in ilk açıq görüşü. 50+ tələbə iştirak etdi. Yusif Əliyev və Kənan Babazadə icmanı tanıtdı, sonra workshop keçirildi. Hər iştirakçı 5 ulduz verdi.",
+            "DataTech's first open meetup. 50+ students attended. Yusif Əliyev and Kənan Babazadə introduced the community, followed by a workshop. Every attendee gave 5 stars.") },
 ];
 
 export type RoadItem = { date: string; title: L; desc: L; tag: "event" | "learn" | "growth" | "milestone" };

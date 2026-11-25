@@ -75,7 +75,7 @@ export default function Home() {
         <SecHead eyebrow={az ? "Keçmiş tədbir" : "Past event"} title={tr(info.title)} href="/qalereya" linkText={az ? "Qalereya →" : "Gallery →"} />
         <div className="infoday">
           <figure><img src={info.gallery![0]} alt={az ? "İnfo gündə təqdimat" : "Info day talk"} loading="lazy" /></figure>
-          <figure><img src={info.gallery![1]} alt={az ? "İnfo gündə komanda üzvü" : "Team member at info day"} loading="lazy" /></figure>
+          <figure><img src={info.gallery![1]} alt={az ? "İnfo gündə iştirakçılar" : "Info day audience"} loading="lazy" /></figure>
           <div className="panel idtext">
             <div><span className="tag">{fmtDate(info.date, lang)}</span><h3 style={{ fontSize: 22, marginTop: 12 }}>{az ? "İlk görüşümüz" : "Our first meetup"}</h3><p className="muted" style={{ marginTop: 8 }}>{tr(info.desc)}</p></div>
             {info.rating ? <div><div className="stars" aria-label={`${info.rating}/5`}>★★★★★</div><p style={{ fontWeight: 600, marginTop: 4 }}>{az ? `Orta rəy: ${info.rating}` : `Average rating: ${info.rating}`}</p></div> : null}
