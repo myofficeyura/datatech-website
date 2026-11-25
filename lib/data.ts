@@ -8,7 +8,6 @@ export const SITE = {
   name: "DataTech",
   university: l("Bakı Mühəndislik Universiteti", "Baku Engineering University"),
   founded: "2026-11-16",
-  motto: "Öyrən, sına, paylaş, inkişaf et",
   // Boş qalan link/ünvan saytda göstərilmir.
   instagram: "https://www.instagram.com/datatech.beu/",
   linkedin: "", // yaxında

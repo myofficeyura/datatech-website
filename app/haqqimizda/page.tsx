@@ -18,7 +18,6 @@ export default function About() {
           <p className="muted">{az
             ? "BMU-da data və AI ilə maraqlanan hər tələbəyə öyrənmək, sınamaq və öz işini göstərmək üçün yer yaratmaq. Biz nəzəriyyədən çox real layihəyə, tək öyrənməkdən çox birlikdə qurmağa inanırıq."
             : "Give every BEU student interested in data and AI a place to learn, experiment and show their work. We value real projects over theory, and building together over learning alone."}</p>
-          <p style={{ fontFamily: "var(--font-d)", fontWeight: 600, fontSize: 18 }}>“{SITE.motto}”</p>
         </div>
         <div className="panel box stack">
           <h3 style={{ fontSize: 20 }}>{az ? "Rəqəmlərlə" : "In numbers"}</h3>
