@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { Icon } from "./Icon";
+import { track } from "@/lib/track";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -24,6 +25,7 @@ export function Chat() {
     if (!q.trim() || busy) return;
     const next = [...msgs, { role: "user" as const, content: q.trim() }];
     setMsgs(next); setText(""); setBusy(true);
+    track("chat_question", { text: q.trim() });
     try {
       const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: next.slice(-10), lang }), signal: AbortSignal.timeout(40000) });
       const j = await r.json();

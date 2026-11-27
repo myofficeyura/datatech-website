@@ -17,6 +17,7 @@ export function RateEvent({ e }: { e: EventItem }) {
     try {
       if (user) await setRecord("ratings", id, { event: e.slug, uid: user.uid, stars: s });
       else { const { addRecord } = await import("@/lib/store"); await addRecord("ratings", { event: e.slug, stars: s }); }
+      (await import("@/lib/track")).track("rating", { label: e.slug, value: s });
       setMsg(lang === "az" ? `Təşəkkürlər! ${s} ulduz qeyd olundu.` : `Thanks! ${s} stars saved.`);
     } catch { setMsg(lang === "az" ? "Saxlanmadı, yenidən yoxla." : "Not saved, try again."); }
   };

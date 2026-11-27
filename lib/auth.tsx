@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut as fbSignOut } from "firebase/auth";
 import { ADMIN_EMAILS, ALLOWED_DOMAIN, fb, firebaseEnabled, isAllowedEmail } from "./firebase";
 import { getRecord, setRecord } from "./store";
+import { setTrackAdmin, track } from "./track";
 
 export type Profile = {
   uid: string; name: string; email: string; faculty?: string; year?: string;
@@ -31,7 +32,8 @@ async function loadProfile(uid: string, email: string, name: string): Promise<Pr
     try { referredBy = localStorage.getItem("dt-ref"); } catch {}
     const refCode = refCodeFor(uid);
     await setRecord("users", uid, { email, name, referredBy, refCode });
-    await setRecord("members", uid, { name, points: 0, badges: ["first-step"], refCode, faculty: "" });
+    await setRecord("members", uid, { name, points: 0, badges: ["first-step"], refCode, faculty: "", joinedAt: new Date().toISOString() });
+    setTrackAdmin(isAdmin); track("sign_up", { label: referredBy ? `ref:${referredBy}` : "" });
     return { uid, email, name, points: 0, badges: ["first-step"], refCode, referredBy, isAdmin };
   }
   return {
@@ -59,7 +61,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setError(`Yalnız @${ALLOWED_DOMAIN} ünvanı ilə daxil olmaq olar.`);
         await fbSignOut(f.auth); setUser(null); setReady(true); return;
       }
-      try { setUser(await loadProfile(u.uid, u.email, u.displayName || u.email.split("@")[0])); }
+      try {
+        const p = await loadProfile(u.uid, u.email, u.displayName || u.email.split("@")[0]);
+        setTrackAdmin(p.isAdmin);
+        try { if (sessionStorage.getItem("dt-signed") !== u.uid) { sessionStorage.setItem("dt-signed", u.uid); track("sign_in"); } } catch {}
+        setUser(p);
+      }
       catch (e) { setError((e as Error).message); }
       setReady(true);
     });

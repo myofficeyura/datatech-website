@@ -89,6 +89,7 @@ export function useRegistration(slug: string) {
     setReg(next);
     try {
       await setRecord("registrations", `${slug}_${user.uid}`, { event: slug, uid: user.uid, name: user.name, active: next });
+      (await import("@/lib/track")).track(next ? "event_register" : "event_unregister", { label: slug });
       toast(next ? (lang === "az" ? "Qeydiyyat tamamlandı" : "You're registered") : (lang === "az" ? "Qeydiyyat ləğv edildi" : "Registration cancelled"));
     } catch { setReg(!next); toast(lang === "az" ? "Alınmadı, yenidən yoxla" : "Failed, try again"); }
   };
@@ -189,7 +190,7 @@ export function useSubmit(col: string, extra?: () => Record<string, unknown>) {
     const data: Record<string, unknown> = {};
     fd.forEach((v, k) => { data[k] = String(v).slice(0, 4000); });
     setState("busy");
-    try { const { addRecord } = await import("@/lib/store"); await addRecord(col, { ...data, ...(extra?.() || {}) }); setState("done"); (e.target as HTMLFormElement).reset(); }
+    try { const { addRecord } = await import("@/lib/store"); await addRecord(col, { ...data, ...(extra?.() || {}) }); setState("done"); (await import("@/lib/track")).track("form_submit", { label: col }); (e.target as HTMLFormElement).reset(); }
     catch { setState("error"); }
   };
   return { state, onSubmit, setState };

@@ -7,9 +7,10 @@ import { useAuth } from "@/lib/auth";
 import { addRecord, bump, getRecord, listRecords, setRecord, toDate, type Rec } from "@/lib/store";
 import { DemoBanner, PageHead, SignInGate } from "@/components/ui";
 import { useToast } from "@/components/Shell";
+import { AnalyticsTab, MembersTab } from "@/components/AdminAnalytics";
 
 const TABS = [
-  ["qr", "QR izləmə"], ["applications", "Müraciətlər"], ["registrations", "Qeydiyyatlar"], ["points", "Xal və nişan"],
+  ["analytics", "Analitika"], ["members", "Üzvlər"], ["qr", "QR izləmə"], ["applications", "Müraciətlər"], ["registrations", "Qeydiyyatlar"], ["points", "Xal və nişan"],
   ["certs", "Sertifikat"], ["projects", "Layihələr"], ["careers", "Karyera elanı"], ["feedback", "Rəylər"],
   ["messages", "Mesajlar"], ["bookings", "Mentor görüşləri"],
 ] as const;
@@ -206,7 +207,7 @@ function CareersTab() {
 
 function Admin() {
   const { user } = useAuth();
-  const [tab, setTab] = useState<Tab>("qr");
+  const [tab, setTab] = useState<Tab>("analytics");
   const lists: Partial<Record<Tab, [string, string[]]>> = {
     applications: ["applications", ["createdAt", "name", "email", "phone", "faculty", "year", "level", "goals", "referredBy"]],
     registrations: ["registrations", ["event", "name", "active", "updatedAt"]],
@@ -214,11 +215,14 @@ function Admin() {
     messages: ["messages", ["createdAt", "name", "email", "topic", "message"]],
     bookings: ["bookings", ["createdAt", "name", "email", "mentor", "slot", "topic"]],
   };
-  if (!user?.isAdmin) return <div className="panel empty"><b>Bu bölmə yalnız idarə heyəti üçündür.</b></div>;
+  // Yalnız admin (Yura). Başqaları üçün səhifə sanki yoxdur. Firestore qaydaları da datanı yalnız adminə verir.
+  if (!user?.isAdmin) return <div className="panel empty"><b>Səhifə tapılmadı.</b></div>;
   const L = lists[tab];
   return (
     <>
       <div className="adm-tabs">{TABS.map(([k, v]) => <button key={k} type="button" className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{v}</button>)}</div>
+      {tab === "analytics" && <AnalyticsTab />}
+      {tab === "members" && <MembersTab />}
       {tab === "qr" && <QrTab />}
       {tab === "points" && <PointsTab />}
       {tab === "certs" && <CertTab />}

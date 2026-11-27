@@ -5,7 +5,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.token.email)); }
+    // Admin: yalnız `admins/{email}` sənədi olan və e-poçtu təsdiqlənmiş hesab. `admins` kolleksiyasına heç kim
+    // saytdan yaza bilməz, yalnız Firebase Console-dan. Orada yalnız bir sənəd (Yuranın e-poçtu) olmalıdır.
+    function isAdmin() { return signedIn() && request.auth.token.email_verified == true
+                              && exists(/databases/$(database)/documents/admins/$(request.auth.token.email)); }
     // BMU tələbəsi (@std.beu.edu.az) və ya admin (admin başqa domendən də ola bilər).
     function isBmu() { return signedIn() && (isAdmin() || (request.auth.token.email_verified == true
                               && request.auth.token.email.matches('.*@std[.]beu[.]edu[.]az$'))); } // DOMAIN
@@ -54,6 +57,18 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isBmu() && request.resource.data.uid == request.auth.uid;
       allow delete: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+    }
+    // Analitika: hər ziyarətçi yalnız yeni hadisə yaza bilər (dəyişmək/oxumaq olmaz). Yalnız admin oxuyur.
+    match /events/{id} {
+      allow read, delete: if isAdmin();
+      allow update: if false;
+      allow create: if request.resource.data.keys().hasOnly(['type','path','label','target','value','text','code','vid','sid','uid','src','dev','os','br','lang','sw','day','hour','createdAt'])
+                    && request.resource.data.type is string && request.resource.data.type.size() <= 30
+                    && request.resource.data.path is string && request.resource.data.path.size() <= 300
+                    && request.resource.data.vid is string && request.resource.data.vid.size() <= 40
+                    && request.resource.data.createdAt == request.time
+                    && (request.resource.data.uid == null || (signedIn() && request.resource.data.uid == request.auth.uid))
+                    && (!('text' in request.resource.data) || request.resource.data.text.size() <= 300);
     }
     // Gizli QR linkləri: hamı oxuyur (yönləndirmə üçün), skan sayğacı yalnız +1 artırıla bilər.
     match /links/{code} {

@@ -368,3 +368,26 @@ textarea.input{height:auto;min-height:110px;padding:12px 14px;resize:vertical}
 .typing i{width:7px;height:7px;border-radius:50%;background:var(--blue-hi);display:block;animation:tdot 1.2s ease-in-out infinite}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 @keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+
+/* admin analitika */
+.a-wrap{gap:14px}
+.a-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.a-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.a-kpi{padding:16px;gap:6px}.a-kpi .num{font-size:30px}
+.delta{font-size:12px;font-weight:600;color:var(--muted)}.delta.up{color:var(--green)}.delta.down{color:#ff6b6b}
+.a-card h3{display:flex;justify-content:space-between;align-items:center;font-size:15px;margin-bottom:12px}
+.a-cols{display:flex;align-items:flex-end;gap:3px;height:160px;padding-top:8px}
+.a-col{flex:1;height:100%;display:flex;align-items:flex-end;position:relative;min-width:0;outline:none}
+.a-col i{display:block;width:100%;min-height:2px;background:var(--blue-hi);border-radius:4px 4px 0 0;transition:opacity .15s}
+.a-cols:hover .a-col i{opacity:.45}.a-cols .a-col:hover i,.a-cols .a-col:focus i{opacity:1}
+.a-col .tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--surface-solid);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .12s;z-index:5;box-shadow:0 8px 20px -8px #0008}
+.a-col:hover .tip,.a-col:focus .tip{opacity:1}
+.a-hbars{display:flex;flex-direction:column;gap:8px}
+.a-hbar{display:grid;grid-template-columns:minmax(0,38%) 1fr auto;gap:10px;align-items:center;font-size:13px}
+.a-hbar .k{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.a-hbar .bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.a-hbar .bar i{display:block;height:100%;background:var(--blue-hi);border-radius:0 4px 4px 0}
+.a-hbar .v{font-weight:700;min-width:28px;text-align:right}
+.a-scroll{max-height:420px;overflow:auto}
+@media (max-width:860px){.a-kpis{grid-template-columns:1fr 1fr}}
+.a-xl{display:flex;gap:3px;margin-top:6px}.a-xl span{flex:1;min-width:0;text-align:center;font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:visible}

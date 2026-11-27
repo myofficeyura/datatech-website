@@ -3,6 +3,7 @@ import { use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { bump, getRecord } from "@/lib/store";
 import { SITE } from "@/lib/data";
+import { track } from "@/lib/track";
 
 // Gizli izləmə linki: /r/<kod>. Skanı sayır və hədəf səhifəyə yönləndirir.
 export default function Track({ params }: { params: Promise<{ code: string }> }) {
@@ -13,7 +14,12 @@ export default function Track({ params }: { params: Promise<{ code: string }> })
       let target = "/";
       try {
         const link = await getRecord("links", code);
-        if (link) { target = String(link.target || "/"); await bump("links", code, "hits", 1); }
+        if (link) {
+          target = String(link.target || "/");
+          try { sessionStorage.setItem("dt-qr", code); sessionStorage.removeItem("dt-src"); } catch {}
+          track("qr_scan", { code, target });
+          await bump("links", code, "hits", 1);
+        }
       } catch {}
       // Xarici hədəf yalnız açar sözlə (açıq yönləndirmənin qarşısını almaq üçün).
       if (target === "@whatsapp" && SITE.whatsapp) { location.replace(SITE.whatsapp); return; }

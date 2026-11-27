@@ -7,6 +7,7 @@ import { useLang, type DictKey } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { Icon } from "./Icon";
 import { Chat } from "./Chat";
+import { setTrackAdmin, track } from "@/lib/track";
 
 const ToastCtx = createContext<(m: string) => void>(() => {});
 export const useToast = () => useContext(ToastCtx);
@@ -16,7 +17,7 @@ function initials(n?: string) { return (n || "?").split(" ").map((s) => s[0]).jo
 export function Shell({ children }: { children: ReactNode }) {
   const path = usePathname();
   const { t, lang, setLang } = useLang();
-  const { user } = useAuth();
+  const { user, ready } = useAuth();
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [sheet, setSheet] = useState(false);
   const [more, setMore] = useState(false);
@@ -25,6 +26,23 @@ export function Shell({ children }: { children: ReactNode }) {
 
   useEffect(() => { setTheme((document.documentElement.dataset.theme as "dark" | "light") || "dark"); }, []);
   useEffect(() => { setSheet(false); }, [path]);
+  // Analitika: hər səhifə baxışı (giriş vəziyyəti bilinəndən sonra, admin sayılmır).
+  useEffect(() => {
+    if (!ready) return;
+    setTrackAdmin(Boolean(user?.isAdmin));
+    if (!path.startsWith("/admin") && !path.startsWith("/r/")) track("page_view", { path });
+  }, [path, ready, user?.isAdmin]);
+  // Xarici linklərə kliklər (WhatsApp, Instagram, LinkedIn və s.).
+  useEffect(() => {
+    const on = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!a || !/^https?:/.test(a.href) || a.host === location.host) return;
+      const u = new URL(a.href);
+      track("click_out", { target: (u.hostname.replace(/^www\./, "") + u.pathname).slice(0, 120), label: (a.textContent || "").trim().slice(0, 60) });
+    };
+    document.addEventListener("click", on, true);
+    return () => document.removeEventListener("click", on, true);
+  }, []);
   const flip = () => {
     const n = theme === "dark" ? "light" : "dark";
     setTheme(n); document.documentElement.dataset.theme = n;
