@@ -153,7 +153,6 @@ export const NAV = {
     { href: "/layiheler", key: "projects", icon: "code" },
     { href: "/xeberler", key: "news", icon: "news" },
     { href: "/qalereya", key: "gallery", icon: "image" },
-    { href: "/terefdaslar", key: "partners", icon: "hand" },
     { href: "/nisanlar", key: "badges", icon: "star" },
     { href: "/sertifikat", key: "certificate", icon: "shield" },
     { href: "/rey", key: "feedback", icon: "pen" },

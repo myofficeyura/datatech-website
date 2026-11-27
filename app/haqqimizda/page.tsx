@@ -33,7 +33,7 @@ export default function About() {
         <div className="grid3">
           {[
             ["code", az ? "Açıq dərslər və workshoplar" : "Open lessons & workshops", az ? "Python, pandas, vizualizasiya, ML əsasları. Başlanğıc səviyyədən." : "Python, pandas, visualisation, ML basics. Beginner friendly."],
-            ["bolt", az ? "Hackathon və yarışlar" : "Hackathons & competitions", az ? "Daxili mini-hackathonlar, tərəfdaşlarla açıq yarışlar, Kaggle komandaları." : "Internal mini-hackathons, open contests with partners, Kaggle teams."],
+            ["bolt", az ? "Hackathon və yarışlar" : "Hackathons & competitions", az ? "Daxili mini-hackathonlar, açıq yarışlar, Kaggle komandaları." : "Internal mini-hackathons, open contests, Kaggle teams."],
             ["people", az ? "Mentorluq və karyera" : "Mentoring & careers", az ? "CV, LinkedIn, təcrübə müraciətləri üçün 1:1 dəstək." : "1:1 help with CVs, LinkedIn and internship applications."],
             ["chart", az ? "Layihələr və Demo Day" : "Projects & Demo Day", az ? "Komandalarla real data layihələri və ictimai təqdimat." : "Real data projects in teams, shown publicly."],
             ["trophy", az ? "Reytinq və mükafatlar" : "Leaderboard & rewards", az ? "Aktivliyə görə xallar, nişanlar və aylıq mükafat." : "Points for activity, badges and a monthly reward."],

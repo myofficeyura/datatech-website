@@ -3,7 +3,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse, type NextRequest } from "next/server";
 import { createHmac } from "crypto";
-import { COMPETITIONS, EVENTS, FAQ, MENTORS, POINTS, ROADMAP_90, ROADMAP_YEAR, SITE, STATS, TEAM, PARTNERS, BADGES } from "@/lib/data";
+import { COMPETITIONS, EVENTS, FAQ, MENTORS, POINTS, ROADMAP_90, ROADMAP_YEAR, SITE, STATS, TEAM, BADGES } from "@/lib/data";
 
 const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT || 20);
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
@@ -17,7 +17,7 @@ const KNOWLEDGE = JSON.stringify({
   roadmapYear: ROADMAP_YEAR.map((r) => ({ date: r.date, title: r.title.az })),
   faq: FAQ.map((f) => ({ q: f.q.az, a: f.a.az })), points: POINTS, badges: BADGES.map((b) => `${b.name.az}: ${b.how.az}`),
   mentors: MENTORS.map((m) => ({ name: m.name, topics: m.topics.az, slots: m.slots })),
-  competitions: COMPETITIONS.map((c) => c.title.az), partners: PARTNERS.map((p) => p.name),
+  competitions: COMPETITIONS.map((c) => c.title.az),
   pages: { join: "/qosul", events: "/tedbirler", cabinet: "/kabinet", leaderboard: "/reytinq", roadmap: "/yol-xeritesi", mentors: "/mentorlar", teamFinder: "/komanda-axtar", quiz: "/quiz", feedback: "/rey", contact: "/elaqe" },
 });
 

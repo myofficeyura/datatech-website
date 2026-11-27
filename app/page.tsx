@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { MENTORS, PARTNERS, SITE, STATS, TEAM, EVENTS } from "@/lib/data";
+import { MENTORS, SITE, STATS, TEAM, EVENTS } from "@/lib/data";
 import { fmtDate, useLang } from "@/lib/i18n";
 import { CountUp, DateBox, MentorCard, RegButton, SecHead, upcomingEvents } from "@/components/ui";
 import { Icon } from "@/components/Icon";
@@ -98,13 +98,6 @@ export default function Home() {
         <SecHead eyebrow={t("mentors")} title={az ? "Mentorlarımız" : "Our mentors"} href="/mentorlar" linkText={t("seeAll")} />
         <div className="mentors">{MENTORS.map((m) => <MentorCard key={m.id} m={m} />)}</div>
       </section>}
-
-      <section>
-        <SecHead eyebrow={t("partners")} title={az ? "Birlikdə güclüyük" : "Stronger together"} href="/terefdaslar" linkText={t("seeAll")} />
-        <div className="partners">
-          {PARTNERS.map((p) => <div key={p.id} className="panel partner">{p.logo && <img src={p.logo} alt="" />}{p.name}</div>)}
-        </div>
-      </section>
 
       <section className="panel join">
         <div><h2>{az ? "Qoşulmağa hazırsan?" : "Ready to join?"}</h2><p>{az ? "Yalnız BMU tələbələri üçün. Qeydiyyat 1 dəqiqə çəkir." : "For BEU students only. Signing up takes a minute."}</p></div>
