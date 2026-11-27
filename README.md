@@ -35,7 +35,7 @@ npm run dev
 ### Vercel
 
 1. vercel.com → **Add New → Project → Import** bu repo.
-2. Environment Variables-a `.env.example`-dakı dəyişənləri əlavə et. `ANTHROPIC_API_KEY` və `CHAT_COOKIE_SECRET` gizlidir, yalnız Vercel-də saxla.
+2. Environment Variables-a `.env.example`-dakı dəyişənləri əlavə et. `GEMINI_API_KEY` (və ya `ANTHROPIC_API_KEY`) və `CHAT_COOKIE_SECRET` gizlidir, yalnız Vercel-də saxla.
 3. Deploy.
 
 ## Məzmunu dəyişmək
