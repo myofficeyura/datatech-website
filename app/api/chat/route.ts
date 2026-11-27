@@ -8,27 +8,40 @@ import { COMPETITIONS, EVENTS, FAQ, MENTORS, POINTS, ROADMAP_90, ROADMAP_YEAR, S
 
 const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT || 20);
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+// "gemini-flash-latest" həmişə Google-un ən son Flash modelinə yönəlir, köhnəlmir.
+const GEMINI_MODELS = [process.env.GEMINI_MODEL, "gemini-flash-latest", "gemini-2.5-flash"].filter(Boolean) as string[];
 
 class BusyError extends Error {}
+class ApiError extends Error { constructor(public code: string) { super(code); } }
 
 // Google Gemini (REST, SDK lazım deyil). Açar: https://aistudio.google.com/apikey
 async function askGemini(messages: Anthropic.MessageParam[]): Promise<string> {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: SYSTEM }] },
-      contents: messages.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: String(m.content) }] })),
-      generationConfig: { maxOutputTokens: 600, temperature: 0.4, ...(GEMINI_MODEL.includes("flash") ? { thinkingConfig: { thinkingBudget: 0 } } : {}) },
-    }),
-  });
-  if (res.status === 429 || res.status === 503) throw new BusyError();
-  const data = await res.json().catch(() => null);
-  if (!res.ok) { console.error("gemini", res.status, JSON.stringify(data).slice(0, 300)); throw new Error("gemini " + res.status); }
-  const parts: { text?: string }[] = data?.candidates?.[0]?.content?.parts || [];
-  const text = parts.map((x) => x.text || "").join("");
-  return text || (data?.candidates?.[0]?.finishReason === "SAFETY" ? "Bu suala cavab verə bilmərəm." : "");
+  let lastCode = "";
+  for (const model of GEMINI_MODELS) {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": (process.env.GEMINI_API_KEY || "").trim() },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: SYSTEM }] },
+        contents: messages.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: String(m.content) }] })),
+        generationConfig: { maxOutputTokens: 2048, temperature: 0.4 },
+      }),
+    });
+    if (res.status === 429 || res.status === 503) throw new BusyError();
+    const data = await res.json().catch(() => null);
+    if (res.status === 404) { lastCode = `404 ${model}`; continue; } // model yoxdursa növbətini yoxla
+    if (!res.ok) {
+      console.error("gemini", model, res.status, JSON.stringify(data).slice(0, 400));
+      throw new ApiError(`${res.status} ${data?.error?.status || ""}`.trim());
+    }
+    const cand = data?.candidates?.[0];
+    const text = (cand?.content?.parts || []).map((x: { text?: string; thought?: boolean }) => (x.thought ? "" : x.text || "")).join("");
+    if (text) return text;
+    if (cand?.finishReason === "SAFETY" || data?.promptFeedback?.blockReason) return "Bu suala cavab verə bilmərəm.";
+    console.error("gemini empty", model, JSON.stringify(data).slice(0, 400));
+    throw new ApiError(`boş cavab ${cand?.finishReason || ""}`.trim());
+  }
+  throw new ApiError(lastCode || "model tapılmadı");
 }
 
 // Bilik bazası: lib/data.ts-dən avtomatik qurulur, sayt dəyişəndə çatbot da yenilənir.
@@ -104,6 +117,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     if (e instanceof BusyError || e instanceof Anthropic.RateLimitError) return NextResponse.json({ error: "Köməkçi hazırda məşğuldur, bir az sonra yoxla.", left: DAILY_LIMIT - used }, { status: 503 });
     if (e instanceof Anthropic.APIError) { console.error("chat api", e.status, e.message); return NextResponse.json({ error: "Köməkçi cavab vermədi.", left: DAILY_LIMIT - used }, { status: 502 }); }
+    if (e instanceof ApiError) return NextResponse.json({ error: `Köməkçi cavab vermədi (Gemini: ${e.code}).`, left: DAILY_LIMIT - used }, { status: 502 });
     console.error("chat", e);
     return NextResponse.json({ error: "Köməkçi cavab vermədi.", left: DAILY_LIMIT - used }, { status: 500 });
   }
