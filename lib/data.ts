@@ -11,6 +11,7 @@ export const SITE = {
   // Boş qalan link/ünvan saytda göstərilmir.
   instagram: "https://www.instagram.com/datatech.beu/",
   linkedin: "https://www.linkedin.com/in/datatech-beu/",
+  linktree: "https://linktr.ee/datatech.beu",
   tiktok: "https://www.tiktok.com/@datatech.beu",
   whatsapp: "https://chat.whatsapp.com/FtHWr7NQ4JNH20xzO15O2n",
   handle: "@datatech.beu",

@@ -30,6 +30,7 @@ export default function Contact() {
             {SITE.whatsapp && <a className="row" href={SITE.whatsapp} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}><Icon name="chat" size={20} /><div className="grow"><b>WhatsApp</b><span>{az ? "İcma qrupuna qoşul" : "Join the community group"}</span></div></a>}
             {SITE.instagram && <a className="row" href={SITE.instagram} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}><Icon name="image" size={20} /><div className="grow"><b>Instagram</b><span>{SITE.handle}</span></div></a>}
             {SITE.linkedin && <a className="row" href={SITE.linkedin} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}><Icon name="brief" size={20} /><div className="grow"><b>LinkedIn</b></div></a>}
+            {SITE.linktree && <a className="row" href={SITE.linktree} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}><Icon name="link" size={20} /><div className="grow"><b>Linktree</b><br /><span className="muted">Bütün linklər bir yerdə</span></div></a>}
             {SITE.tiktok && <a className="row" href={SITE.tiktok} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}><Icon name="spark" size={20} /><div className="grow"><b>TikTok</b><span>{SITE.handle}</span></div></a>}
             <div className="row"><Icon name="pin" size={20} /><div className="grow"><b>{az ? "Bakı Mühəndislik Universiteti" : "Baku Engineering University"}</b></div></div>
           </div>
