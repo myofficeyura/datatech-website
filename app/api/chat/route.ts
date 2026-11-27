@@ -10,14 +10,15 @@ export const maxDuration = 60;
 const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT || 20);
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
 // "gemini-flash-latest" həmişə Google-un ən son Flash modelinə yönəlir, köhnəlmir.
-const GEMINI_MODELS = [process.env.GEMINI_MODEL, "gemini-flash-latest", "gemini-2.5-flash"].filter(Boolean) as string[];
+// Limit (429) və ya model yoxdursa (404) növbəti modelə keçir.
+const GEMINI_MODELS = [process.env.GEMINI_MODEL, "gemini-2.5-flash", "gemini-flash-latest", "gemini-2.5-flash-lite", "gemini-flash-lite-latest"].filter(Boolean) as string[];
 
-class BusyError extends Error {}
+class BusyError extends Error { constructor(public code = "") { super(code); } }
 class ApiError extends Error { constructor(public code: string) { super(code); } }
 
 // Google Gemini (REST, SDK lazım deyil). Açar: https://aistudio.google.com/apikey
 async function askGemini(messages: Anthropic.MessageParam[]): Promise<string> {
-  let lastCode = "";
+  let lastCode = "", busy = false;
   for (const model of GEMINI_MODELS) {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: "POST",
@@ -29,9 +30,12 @@ async function askGemini(messages: Anthropic.MessageParam[]): Promise<string> {
       }),
       signal: AbortSignal.timeout(30000),
     });
-    if (res.status === 429 || res.status === 503) throw new BusyError();
     const data = await res.json().catch(() => null);
-    if (res.status === 404) { lastCode = `404 ${model}`; continue; } // model yoxdursa növbətini yoxla
+    if (res.status === 429 || res.status === 503 || res.status === 404) {
+      // limit, yüklənmə və ya model yoxdur: növbəti modeli yoxla
+      console.error("gemini skip", model, res.status, JSON.stringify(data).slice(0, 300));
+      lastCode = `${res.status} ${model}`; busy = busy || res.status !== 404; continue;
+    }
     if (!res.ok) {
       console.error("gemini", model, res.status, JSON.stringify(data).slice(0, 400));
       throw new ApiError(`${res.status} ${data?.error?.status || ""}`.trim());
@@ -43,6 +47,7 @@ async function askGemini(messages: Anthropic.MessageParam[]): Promise<string> {
     console.error("gemini empty", model, JSON.stringify(data).slice(0, 400));
     throw new ApiError(`boş cavab ${cand?.finishReason || ""}`.trim());
   }
+  if (busy) throw new BusyError(lastCode);
   throw new ApiError(lastCode || "model tapılmadı");
 }
 
@@ -117,7 +122,7 @@ export async function POST(req: NextRequest) {
     out.cookies.set("dt_chat", `${day}.${used}.${sign(`${day}.${used}`)}`, { httpOnly: true, sameSite: "lax", secure: true, maxAge: 60 * 60 * 26, path: "/" });
     return out;
   } catch (e) {
-    if (e instanceof BusyError || e instanceof Anthropic.RateLimitError) return NextResponse.json({ error: "Köməkçi hazırda məşğuldur, bir az sonra yoxla.", left: DAILY_LIMIT - used }, { status: 503 });
+    if (e instanceof BusyError || e instanceof Anthropic.RateLimitError) return NextResponse.json({ error: `Köməkçi hazırda məşğuldur, bir az sonra yoxla.${e instanceof BusyError && e.code ? ` (Gemini: ${e.code})` : ""}`, left: DAILY_LIMIT - used }, { status: 503 });
     if (e instanceof Anthropic.APIError) { console.error("chat api", e.status, e.message); return NextResponse.json({ error: "Köməkçi cavab vermədi.", left: DAILY_LIMIT - used }, { status: 502 }); }
     if (e instanceof Error && (e.name === "TimeoutError" || e.name === "AbortError")) return NextResponse.json({ error: "Köməkçi gec cavab verdi, bir az sonra yenidən yoxla.", left: DAILY_LIMIT - used }, { status: 504 });
     if (e instanceof ApiError) return NextResponse.json({ error: `Köməkçi cavab vermədi (Gemini: ${e.code}).`, left: DAILY_LIMIT - used }, { status: 502 });
