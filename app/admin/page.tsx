@@ -8,9 +8,10 @@ import { addRecord, bump, getRecord, listRecords, setRecord, toDate, type Rec } 
 import { DemoBanner, PageHead, SignInGate } from "@/components/ui";
 import { useToast } from "@/components/Shell";
 import { AnalyticsTab, MembersTab } from "@/components/AdminAnalytics";
+import { ScoreTab } from "@/components/AdminScore";
 
 const TABS = [
-  ["analytics", "Analitika"], ["members", "Üzvlər"], ["qr", "QR izləmə"], ["applications", "Müraciətlər"], ["registrations", "Qeydiyyatlar"], ["points", "Xal və nişan"],
+  ["analytics", "Analitika"], ["score", "Reytinq"], ["members", "Üzvlər"], ["qr", "QR izləmə"], ["applications", "Müraciətlər"], ["registrations", "Qeydiyyatlar"], ["points", "Xal və nişan"],
   ["certs", "Sertifikat"], ["projects", "Layihələr"], ["careers", "Karyera elanı"], ["feedback", "Rəylər"],
   ["messages", "Mesajlar"], ["bookings", "Mentor görüşləri"],
 ] as const;
@@ -222,6 +223,7 @@ function Admin() {
     <>
       <div className="adm-tabs">{TABS.map(([k, v]) => <button key={k} type="button" className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{v}</button>)}</div>
       {tab === "analytics" && <AnalyticsTab />}
+      {tab === "score" && <ScoreTab />}
       {tab === "members" && <MembersTab />}
       {tab === "qr" && <QrTab />}
       {tab === "points" && <PointsTab />}

@@ -70,6 +70,24 @@ service cloud.firestore {
                     && (request.resource.data.uid == null || (signedIn() && request.resource.data.uid == request.auth.uid))
                     && (!('text' in request.resource.data) || request.resource.data.text.size() <= 300);
     }
+    // Aktivlik reytinqi: xam data yalnız admin üçündür və heç vaxt silinmir (illik analiz üçün).
+    match /roster/{email}  { allow read, create, update: if isAdmin(); allow delete: if false; }
+    match /aliases/{key}   { allow read, create, update: if isAdmin(); allow delete: if false; }
+    match /imports/{id}    { allow read, create, update: if isAdmin(); allow delete: if false; }
+    match /scores/{month}  { allow read, create, update: if isAdmin(); allow delete: if false; }
+    // Check-in sessiyaları: hamı oxuyur (QR səhifəsi üçün), yalnız admin yaradır/açıb-bağlayır.
+    match /sessions/{code} { allow read: if true; allow create, update: if isAdmin(); allow delete: if false; }
+    // Check-in: BMU üzvü öz adına, açıq sessiyaya yalnız bir dəfə yazır. Dəyişmək/silmək olmaz.
+    match /checkins/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow create: if isBmu() && id == request.resource.data.code + '_' + request.auth.uid
+                    && request.resource.data.keys().hasOnly(['code','uid','email','kind','day','updatedAt'])
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.email == request.auth.token.email.lower()
+                    && request.resource.data.updatedAt == request.time
+                    && get(/databases/$(database)/documents/sessions/$(request.resource.data.code)).data.open == true;
+      allow update, delete: if false;
+    }
     // Gizli QR linkləri: hamı oxuyur (yönləndirmə üçün), skan sayğacı yalnız +1 artırıla bilər.
     match /links/{code} {
       allow read: if true;

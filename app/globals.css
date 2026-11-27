@@ -391,3 +391,23 @@ textarea.input{height:auto;min-height:110px;padding:12px 14px;resize:vertical}
 .a-scroll{max-height:420px;overflow:auto}
 @media (max-width:860px){.a-kpis{grid-template-columns:1fr 1fr}}
 .a-xl{display:flex;gap:3px;margin-top:6px}.a-xl span{flex:1;min-width:0;text-align:center;font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:visible}
+
+/* admin reytinq */
+.a-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:860px){.a-grid2{grid-template-columns:1fr}}
+.seg{display:flex;gap:4px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.seg button{border:0;background:none;border-radius:8px;padding:7px 11px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--blue);color:#fff}
+.linkbtn{border:0;background:none;padding:0;color:var(--blue-hi);font-weight:600;cursor:pointer;text-decoration:underline}
+.sc-podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sc-pod{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px;position:relative}
+.sc-pod.p1{border-color:#f5b83d;background:linear-gradient(160deg,#f5b83d22,transparent 70%)}
+.sc-pod b{font-size:16px}.sc-total{font-size:28px;font-weight:700}
+.sc-place{position:absolute;top:10px;right:12px;font-weight:700;color:var(--muted)}
+.sc-pod.p1 .sc-place{color:#f5b83d}
+@media (max-width:700px){.sc-podium{grid-template-columns:1fr}}
+.sc-table td,.sc-table th{white-space:nowrap}
+.sc-table tr.sc-top td:first-child{color:#f5b83d;font-weight:700}
+.sc-table td.up{color:var(--green)}.sc-table td.down{color:#ff6b6b}
+.sc-cell{display:inline-block;min-width:34px;padding:2px 6px;border-radius:6px;background:color-mix(in srgb,var(--blue-hi) calc(var(--f,0)*45%),transparent)}
+.a-grid2>*{min-width:0}
