@@ -1,5 +1,5 @@
 rules_version = '2';
-// DataTech Firestore qaydaları.
+// DataTech Firestore qaydaları + BMU İcmaları ortaq saytı (hub_ kolleksiyaları, faylın sonunda).
 // Admin: `admins/{email}` sənədi olan istifadəçi (Firebase Console-dan əl ilə yaradılır).
 // BMU domeni: aşağıdakı DOMAIN dəyərini real domenlə əvəz et.
 service cloud.firestore {
@@ -76,6 +76,89 @@ service cloud.firestore {
       allow create, delete: if isAdmin();
       allow update: if isAdmin() || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hits', 'updatedAt'])
                                      && request.resource.data.hits == resource.data.hits + 1);
+    }
+
+    // =====================================================================
+    // BMU İCMALARI ORTAQ SAYTI (hub_ kolleksiyaları). DataTech-in qaydalarına toxunulmur.
+    // Baş admin: DataTech-in admins/{email} sənədi VƏ YA hub_admins/{email} (role != "community").
+    // İcma admini: hub_admins/{email} {role: "community", community: "devora|shellshock|datatech|innotech"}.
+    // =====================================================================
+    function hubEmail() { return request.auth.token.email.lower(); }
+    function hubAdminPath() { return /databases/$(database)/documents/hub_admins/$(hubEmail()); }
+    function hubIsAdmin() { return signedIn() && (isAdmin() || exists(hubAdminPath())); }
+    function hubIsSuper() { return signedIn() && (isAdmin() || (exists(hubAdminPath()) && get(hubAdminPath()).data.get('role', 'super') != 'community')); }
+    function hubMine() { return get(hubAdminPath()).data.get('community', '-'); }
+    // Bu icmanı redaktə edə bilərmi? ("all" yalnız baş admin üçündür.)
+    function hubCan(c) { return hubIsSuper() || (hubIsAdmin() && c == hubMine()); }
+    function hubWriteScoped() {
+      return hubIsSuper() || (
+        hubIsAdmin()
+        && (request.resource == null || hubCan(request.resource.data.get('community', '-')))
+        && (resource == null || hubCan(resource.data.get('community', '-'))));
+    }
+    function hubStr(d, k, min, max) { return d.get(k, '') is string && d.get(k, '').size() >= min && d.get(k, '').size() <= max; }
+    function hubScope(v) { return v in ['all', 'devora', 'shellshock', 'datatech', 'innotech']; }
+
+    match /hub_admins/{email} {
+      allow read: if signedIn() && (hubEmail() == email || hubIsSuper());
+      allow write: if hubIsSuper();
+    }
+    match /hub_site/{id} { allow read: if true; allow write: if hubIsSuper(); }
+    match /hub_communities/{id} {
+      allow read: if true;
+      allow create, delete: if hubIsSuper();
+      allow update: if hubCan(id);
+    }
+    match /hub_events/{id}   { allow read: if true; allow write: if hubWriteScoped(); }
+    match /hub_team/{id}     { allow read: if true; allow write: if hubWriteScoped(); }
+    match /hub_mentors/{id}  { allow read: if true; allow write: if hubWriteScoped(); }
+    match /hub_partners/{id} { allow read: if true; allow write: if hubWriteScoped(); }
+    match /hub_faqs/{id}     { allow read: if true; allow write: if hubWriteScoped(); }
+    // Şəkillər (Storage aktiv olmayanda Firestore-da saxlanılır, ~700 KB-a qədər).
+    match /hub_media/{id} {
+      allow read: if true;
+      allow create: if hubIsAdmin() && request.resource.data.data is string && request.resource.data.data.size() < 1000000;
+      allow delete: if hubIsAdmin();
+    }
+
+    // Formalar: hər kəs göndərə bilər (sayt /api/forms vasitəsilə), ölçü və sahələr yoxlanılır.
+    match /hub_problems/{id} {
+      allow read: if resource.data.public == true || hubIsAdmin();
+      allow create: if request.resource.data.keys().hasOnly(['title', 'description', 'affected', 'current', 'category', 'community', 'name', 'contact', 'status', 'public', 'createdAt'])
+        && hubStr(request.resource.data, 'title', 1, 160) && hubStr(request.resource.data, 'description', 1, 1500)
+        && hubStr(request.resource.data, 'affected', 0, 300) && hubStr(request.resource.data, 'current', 0, 300)
+        && hubStr(request.resource.data, 'category', 0, 30) && hubStr(request.resource.data, 'name', 0, 80)
+        && hubStr(request.resource.data, 'contact', 0, 120) && hubScope(request.resource.data.community)
+        && request.resource.data.status == 'pending' && request.resource.data.public == false;
+      allow update: if hubIsSuper() || (hubIsAdmin() && resource.data.community in ['all', hubMine()]);
+      allow delete: if hubIsSuper() || (hubIsAdmin() && resource.data.community == hubMine());
+    }
+    match /hub_questions/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['kind', 'name', 'contact', 'question', 'category', 'community', 'answered', 'createdAt'])
+        && request.resource.data.kind in ['question', 'contact'] && hubStr(request.resource.data, 'question', 1, 1000)
+        && hubStr(request.resource.data, 'name', 0, 80) && hubStr(request.resource.data, 'contact', 0, 120)
+        && hubStr(request.resource.data, 'category', 0, 30) && hubScope(request.resource.data.community)
+        && request.resource.data.answered == false;
+      allow read: if hubIsAdmin();
+      allow update: if hubIsSuper() || (hubIsAdmin() && resource.data.community in ['all', hubMine()]);
+      allow delete: if hubIsSuper() || (hubIsAdmin() && resource.data.community == hubMine());
+    }
+    match /hub_collabs/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['type', 'name', 'org', 'contact', 'message', 'community', 'answered', 'createdAt'])
+        && request.resource.data.type in ['community', 'sponsor', 'mentor', 'company']
+        && hubStr(request.resource.data, 'name', 1, 80) && hubStr(request.resource.data, 'contact', 1, 120)
+        && hubStr(request.resource.data, 'message', 1, 1000) && hubStr(request.resource.data, 'org', 0, 120)
+        && hubScope(request.resource.data.community) && request.resource.data.answered == false;
+      allow read: if hubIsAdmin();
+      allow update: if hubIsSuper() || (hubIsAdmin() && resource.data.community in ['all', hubMine()]);
+      allow delete: if hubIsSuper() || (hubIsAdmin() && resource.data.community == hubMine());
+    }
+    match /hub_registrations/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['eventId', 'eventSlug', 'name', 'contact', 'group', 'note', 'createdAt'])
+        && hubStr(request.resource.data, 'eventId', 1, 80) && hubStr(request.resource.data, 'eventSlug', 0, 80)
+        && hubStr(request.resource.data, 'name', 1, 80) && hubStr(request.resource.data, 'contact', 1, 120)
+        && hubStr(request.resource.data, 'group', 0, 80) && hubStr(request.resource.data, 'note', 0, 300);
+      allow read, update, delete: if hubIsAdmin();
     }
   }
 }
