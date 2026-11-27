@@ -25,7 +25,7 @@ export function Chat() {
     const next = [...msgs, { role: "user" as const, content: q.trim() }];
     setMsgs(next); setText(""); setBusy(true);
     try {
-      const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: next.slice(-10), lang }) });
+      const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: next.slice(-10), lang }), signal: AbortSignal.timeout(40000) });
       const j = await r.json();
       if (typeof j.left === "number") setLeft(j.left);
       setMsgs([...next, { role: "assistant", content: j.reply || j.error || "…" }]);
@@ -47,7 +47,7 @@ export function Chat() {
         <div className="msgs" ref={box}>
           <div className="bub bot">{hello}</div>
           {msgs.map((m, i) => <div key={i} className={"bub " + (m.role === "user" ? "me" : "bot")} style={{ whiteSpace: "pre-wrap" }}>{m.content}</div>)}
-          {busy && <div className="bub bot">…</div>}
+          {busy && <div className="bub bot typing" aria-label={lang === "az" ? "Köməkçi yazır" : "Assistant is typing"}><i /><i /><i /></div>}
         </div>
         {msgs.length === 0 && <div className="sugg">{sugg.map((s) => <button key={s} type="button" onClick={() => ask(s)}>{s}</button>)}</div>}
         <div className="limit">{lang === "az" ? "Gündəlik limit" : "Daily limit"}: {left ?? 20} {lang === "az" ? "sual qalıb" : "questions left"}</div>

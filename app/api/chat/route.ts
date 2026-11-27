@@ -6,6 +6,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createHmac } from "crypto";
 import { COMPETITIONS, EVENTS, FAQ, MENTORS, POINTS, ROADMAP_90, ROADMAP_YEAR, SITE, STATS, TEAM, BADGES } from "@/lib/data";
 
+export const maxDuration = 60;
 const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT || 20);
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
 // "gemini-flash-latest" həmişə Google-un ən son Flash modelinə yönəlir, köhnəlmir.
@@ -26,6 +27,7 @@ async function askGemini(messages: Anthropic.MessageParam[]): Promise<string> {
         contents: messages.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: String(m.content) }] })),
         generationConfig: { maxOutputTokens: 2048, temperature: 0.4 },
       }),
+      signal: AbortSignal.timeout(30000),
     });
     if (res.status === 429 || res.status === 503) throw new BusyError();
     const data = await res.json().catch(() => null);
@@ -117,6 +119,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     if (e instanceof BusyError || e instanceof Anthropic.RateLimitError) return NextResponse.json({ error: "Köməkçi hazırda məşğuldur, bir az sonra yoxla.", left: DAILY_LIMIT - used }, { status: 503 });
     if (e instanceof Anthropic.APIError) { console.error("chat api", e.status, e.message); return NextResponse.json({ error: "Köməkçi cavab vermədi.", left: DAILY_LIMIT - used }, { status: 502 }); }
+    if (e instanceof Error && (e.name === "TimeoutError" || e.name === "AbortError")) return NextResponse.json({ error: "Köməkçi gec cavab verdi, bir az sonra yenidən yoxla.", left: DAILY_LIMIT - used }, { status: 504 });
     if (e instanceof ApiError) return NextResponse.json({ error: `Köməkçi cavab vermədi (Gemini: ${e.code}).`, left: DAILY_LIMIT - used }, { status: 502 });
     console.error("chat", e);
     return NextResponse.json({ error: "Köməkçi cavab vermədi.", left: DAILY_LIMIT - used }, { status: 500 });
