@@ -11,7 +11,7 @@ const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT || 20);
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
 // "gemini-flash-latest" həmişə Google-un ən son Flash modelinə yönəlir, köhnəlmir.
 // Limit (429) və ya model yoxdursa (404) növbəti modelə keçir.
-const GEMINI_MODELS = [process.env.GEMINI_MODEL, "gemini-2.5-flash", "gemini-flash-latest", "gemini-2.5-flash-lite", "gemini-flash-lite-latest"].filter(Boolean) as string[];
+const GEMINI_MODELS = [process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-2.5-flash", "gemini-flash-latest", "gemini-2.5-flash-lite", "gemini-flash-lite-latest"].filter(Boolean) as string[];
 
 class BusyError extends Error { constructor(public code = "") { super(code); } }
 class ApiError extends Error { constructor(public code: string) { super(code); } }
@@ -26,7 +26,10 @@ async function askGemini(messages: Anthropic.MessageParam[]): Promise<string> {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM }] },
         contents: messages.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: String(m.content) }] })),
-        generationConfig: { maxOutputTokens: 2048, temperature: 0.4 },
+        // Gemini 3+ modellərində temperature yoxdur, düşünmə səviyyəsi thinkingLevel ilə verilir.
+        generationConfig: /^gemini-[3-9]/.test(model)
+          ? { maxOutputTokens: 2048, thinkingConfig: { thinkingLevel: "low" } }
+          : { maxOutputTokens: 2048, temperature: 0.4 },
       }),
       signal: AbortSignal.timeout(30000),
     });
