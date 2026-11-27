@@ -109,7 +109,8 @@ export default function Home() {
 
       <footer>
         <span>© 2026 DataTech · {az ? "Bakı Mühəndislik Universiteti" : "Baku Engineering University"}</span>
-        <span style={{ display: "flex", gap: 14, flexWrap: "wrap" }}><Link href="/elaqe">{t("contact")}</Link><Link href="/faq">{t("faq")}</Link><Link href="/rey">{t("feedback")}</Link></span>
+        <span style={{ display: "flex", gap: 14, flexWrap: "wrap" }}><Link href="/elaqe">{t("contact")}</Link><Link href="/rey">{t("feedback")}</Link>
+          {([["Instagram", SITE.instagram], ["TikTok", SITE.tiktok], ["LinkedIn", SITE.linkedin]] as const).filter(([, u]) => u).map(([n, u]) => <a key={n} href={u} target="_blank" rel="noopener noreferrer">{n}</a>)}</span>
       </footer>
     </>
   );

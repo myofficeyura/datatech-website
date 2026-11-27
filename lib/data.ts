@@ -10,7 +10,7 @@ export const SITE = {
   founded: "2026-11-16",
   // Boş qalan link/ünvan saytda göstərilmir.
   instagram: "https://www.instagram.com/datatech.beu/",
-  linkedin: "", // yaxında
+  linkedin: "https://www.linkedin.com/in/datatech-beu/",
   tiktok: "https://www.tiktok.com/@datatech.beu",
   whatsapp: "https://chat.whatsapp.com/FtHWr7NQ4JNH20xzO15O2n",
   handle: "@datatech.beu",
