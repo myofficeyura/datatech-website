@@ -24,7 +24,15 @@ function download(name: string, text: string, type = "text/csv") {
   const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + text], { type })); a.download = name; a.click();
 }
 const q = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-const readFile = (f: File) => new Promise<string>((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsText(f, "utf-8"); });
+const readFile = async (f: File): Promise<string> => {
+  // Excel (.xlsx/.xls) faylının ilk vərəqini CSV-yə çeviririk; qalanları mətn kimi oxunur.
+  if (/\.(xlsx|xls|ods)$/i.test(f.name)) {
+    const XLSX = await import("xlsx");
+    const wb = XLSX.read(await f.arrayBuffer(), { type: "array" });
+    return XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+  }
+  return f.text();
+};
 
 type Data = { roster: RosterRow[]; aliases: Map<string, string>; imports: Rec[]; users: Rec[]; events: Rec[]; checkins: Rec[]; sessions: Rec[]; archive: Rec[] };
 
@@ -290,7 +298,7 @@ function ImportPanel({ data, onSaved }: { data: Data; onSaved: (msg: string) => 
     if (!f) return; const text = await readFile(f);
     if (kind === "roster") {
       const rows = parseRoster(text);
-      if (!rows.length) { onSaved("Cədvəldə BMU e-poçtu olan sətir tapılmadı. Google Sheet-də Fayl → Yüklə → CSV seç."); return; }
+      if (!rows.length) { onSaved("Cədvəldə BMU e-poçtu olan sətir tapılmadı. Google Form cavab cədvəlini Excel və ya CSV kimi yüklə."); return; }
       setBusy(true);
       for (const r of rows) await setRecord("roster", r.email, { ...r });
       setBusy(false); onSaved(`${rows.length} üzv siyahıya yazıldı (köhnələr yeniləndi, heç kim silinmədi).`); return;
@@ -327,17 +335,17 @@ function ImportPanel({ data, onSaved }: { data: Data; onSaved: (msg: string) => 
     <div className="stack">
       <div className="a-grid2">
         <section className="panel box a-card"><h3>1. Üzv siyahısı</h3>
-          <p className="note">Google Form cədvəli: Fayl → Yüklə → CSV. Hazırda siyahıda <b>{data.roster.length}</b> üzv var. Hər yükləmədə yenilənir, heç kim silinmir.</p>
-          <input type="file" accept=".csv,text/csv" disabled={busy} onChange={(e) => { onFile("roster", e.target.files?.[0]); e.target.value = ""; }} />
+          <p className="note">Google Form cədvəli: Excel (.xlsx) və ya CSV. Hazırda siyahıda <b>{data.roster.length}</b> üzv var. Hər yükləmədə yenilənir, heç kim silinmir.</p>
+          <input type="file" disabled={busy} onChange={(e) => { onFile("roster", e.target.files?.[0]); e.target.value = ""; }} />
         </section>
         <section className="panel box a-card"><h3>2. WhatsApp söhbət qrupu</h3>
           <p className="note">Yalnız hamının yaza bildiyi söhbət qrupu. Qrup → ⋮ → Daha çox → Söhbəti ixrac et → <b>Mediasız</b>. .txt faylını bura at (zip-dirsə, aç).</p>
-          <input type="file" accept=".txt,text/plain" disabled={busy || !data.roster.length} onChange={(e) => { onFile("whatsapp", e.target.files?.[0]); e.target.value = ""; }} />
+          <input type="file" disabled={busy || !data.roster.length} onChange={(e) => { onFile("whatsapp", e.target.files?.[0]); e.target.value = ""; }} />
           {!data.roster.length && <p className="note">Əvvəlcə üzv siyahısını yüklə.</p>}
         </section>
         <section className="panel box a-card"><h3>3. Sosial media, tədbir, dərs, töhfə</h3>
           <p className="note">Tariel və komanda həftəlik cədvəl doldurur: tarix, platforma, kim, hərəkət, say. <button type="button" className="linkbtn" onClick={template}>Nümunə CSV yüklə</button></p>
-          <input type="file" accept=".csv,text/csv" disabled={busy || !data.roster.length} onChange={(e) => { onFile("manual", e.target.files?.[0]); e.target.value = ""; }} />
+          <input type="file" disabled={busy || !data.roster.length} onChange={(e) => { onFile("manual", e.target.files?.[0]); e.target.value = ""; }} />
         </section>
         <section className="panel box a-card"><h3>Avtomatik gələnlər</h3>
           <p className="note">Bunları heç nə yükləmədən özüm götürürəm: sayt (aktiv gün, çatbot, tədbirə yazılma, formlar, qiymətlər), QR check-in (tədbir və dərs) və dəvət linkləri.</p>
