@@ -87,9 +87,9 @@ export default function Home() {
         <SecHead eyebrow={t("team")} title={az ? "İdarə heyəti" : "Board"} href="/komanda" linkText={t("seeAll")} />
         <div className="team">
           {TEAM.map((m) => (
-            <Link key={m.id} href={`/komanda#${m.id}`} className="panel member" style={{ textDecoration: "none" }}>
-              <img src={m.photo} alt={m.name} loading="lazy" width={200} height={200} /><b>{m.name}</b><span>{tr(m.role)}</span>
-            </Link>
+            <a key={m.id} href={m.linkedin || `/komanda#${m.id}`} target={m.linkedin ? "_blank" : undefined} rel="noopener noreferrer" className="panel member" style={{ textDecoration: "none" }}>
+              <img src={m.photo} alt={m.name} loading="lazy" width={200} height={200} /><b>{m.name}</b><span>{tr(m.role)}</span>{m.linkedin && <span className="li">LinkedIn →</span>}
+            </a>
           ))}
         </div>
       </section>

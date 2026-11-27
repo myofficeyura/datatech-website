@@ -14,6 +14,7 @@ export default function Team() {
             <img src={m.photo} alt={m.name} width={400} height={400} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", borderRadius: 12 }} />
             <div><h3 style={{ fontSize: 19 }}>{m.name}</h3><span className="tag" style={{ marginTop: 6 }}>{tr(m.role)}</span></div>
             <p className="muted" style={{ fontSize: 14 }}>{tr(m.bio)}</p>
+            {m.linkedin && <a href={m.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: "var(--blue-hi)", fontWeight: 600, fontSize: 14, textDecoration: "none", marginTop: "auto" }}>LinkedIn →</a>}
           </article>
         ))}
       </div>
