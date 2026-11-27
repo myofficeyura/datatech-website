@@ -19,6 +19,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [sheet, setSheet] = useState(false);
+  const [more, setMore] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const tt = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -42,7 +43,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <ToastCtx.Provider value={show}>
-      <div className="field" aria-hidden="true"><div className="blob b1" /><div className="blob b2" /><div className="blob b3" /><div className="grain" /></div>
+      <div className="field" aria-hidden="true"><div className="blob b1" /><div className="blob b2" /></div>
 
       <aside className="rail" aria-label="Naviqasiya">
         <Link className="brand" href="/"><img src={logo} alt="" width={27} height={34} /><b>DataTech</b></Link>
@@ -51,9 +52,9 @@ export function Shell({ children }: { children: ReactNode }) {
             {NAV.main.map((n) => (
               <Link key={n.href} href={n.href} className={on(n.href) ? "on" : ""}><Icon name={n.icon} /><span>{t(n.key as DictKey)}</span></Link>
             ))}
-            <div className="group">{t("community")}</div>
-            {NAV.more.map((n) => (
-              <Link key={n.href} href={n.href} className={on(n.href) ? "on" : ""}><Icon name={n.icon} /><span>{t(n.key as DictKey)}</span></Link>
+            <button type="button" className="navbtn" onClick={() => setMore((v) => !v)} aria-expanded={more || NAV.more.some((n) => on(n.href))}><Icon name="more" /><span>{t("more")}</span></button>
+            {(more || NAV.more.some((n) => on(n.href))) && NAV.more.map((n) => (
+              <Link key={n.href} href={n.href} className={"sub " + (on(n.href) ? "on" : "")}><Icon name={n.icon} /><span>{t(n.key as DictKey)}</span></Link>
             ))}
             {user?.isAdmin && <Link href="/admin" className={on("/admin") ? "on" : ""}><Icon name="settings" /><span>{t("admin")}</span></Link>}
           </nav>
@@ -73,14 +74,14 @@ export function Shell({ children }: { children: ReactNode }) {
       <main><div className="wrap">{children}</div></main>
 
       <nav className="bottom" aria-label="Alt naviqasiya">
-        {[NAV.main[0], NAV.main[2], NAV.main[5], { href: "/kabinet", key: "cabinet", icon: "user" }].map((n) => (
+        {[NAV.main[0], NAV.main[2], NAV.main[3], { href: "/kabinet", key: "cabinet", icon: "user" }].map((n) => (
           <Link key={n.href} href={n.href} className={on(n.href) ? "on" : ""}><Icon name={n.icon} /><span>{t((n.key === "home" ? "home_s" : n.key) as DictKey)}</span></Link>
         ))}
         <button type="button" onClick={() => setSheet((s) => !s)} aria-expanded={sheet} className={sheet ? "on" : ""}><Icon name="more" /><span>{t("more")}</span></button>
       </nav>
       <div className={"sheet" + (sheet ? " open" : "")} aria-hidden={!sheet}>
         <div className="grid">
-          {[NAV.main[1], NAV.main[3], NAV.main[4], ...NAV.more].map((n) => (
+          {[NAV.main[1], ...NAV.main.slice(4), ...NAV.more].map((n) => (
             <Link key={n.href} href={n.href} tabIndex={sheet ? 0 : -1}><Icon name={n.icon} /><span>{t(n.key as DictKey)}</span></Link>
           ))}
           {user?.isAdmin && <Link href="/admin" tabIndex={sheet ? 0 : -1}><Icon name="settings" /><span>{t("admin")}</span></Link>}

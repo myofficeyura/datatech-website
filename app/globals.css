@@ -143,7 +143,7 @@ main{margin-left:var(--rail);padding-block:28px 120px;padding-left:max(28px,env(
 .team{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
 .member{padding:12px;text-align:left;transition:transform .25s,border-color .25s}
 .member:hover{transform:translateY(-4px);border-color:var(--blue-hi)}
-.member img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;filter:grayscale(1) contrast(1.05);transition:filter .4s;max-width:100%}
+.member img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;max-width:100%}
 .member:hover img{filter:none}
 .member b{display:block;margin-top:10px;font-family:var(--font-d);font-size:15px;line-height:1.25}
 .member span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.35}
@@ -350,3 +350,16 @@ textarea.input{height:auto;min-height:110px;padding:12px 14px;resize:vertical}
   body{background:#fff!important;color:#000!important}
   .certificate{border-color:#2456ee!important;background:#fff!important}
 }
+
+/* sadələşdirmə (27 noy) */
+.blob{opacity:.45}
+.nav a.sub{padding-left:22px;font-size:14px}
+.member img{border-radius:50%;height:auto}
+.mentors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mentor{display:flex;gap:16px;align-items:flex-start;padding:20px}
+.mentor img{width:88px;height:88px;border-radius:50%;object-fit:cover;flex:none}
+.mentor b{font-family:var(--font-d);font-size:17px;display:block}
+.mentor .mt{display:block;color:var(--blue-hi);font-size:13px;font-weight:600;margin-top:4px;line-height:1.35}
+.mentor p{color:var(--muted);font-size:13.5px;margin-top:8px}
+.mentor a{display:inline-block;margin-top:10px;color:var(--blue-hi);font-size:13.5px;font-weight:600;text-decoration:none}
+@media (max-width:1080px){.mentors{grid-template-columns:1fr}}

@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import { PARTNERS, SITE, STATS, TEAM, EVENTS } from "@/lib/data";
+import { MENTORS, PARTNERS, SITE, STATS, TEAM, EVENTS } from "@/lib/data";
 import { fmtDate, useLang } from "@/lib/i18n";
-import { CountUp, DateBox, RegButton, SecHead, upcomingEvents } from "@/components/ui";
+import { CountUp, DateBox, MentorCard, RegButton, SecHead, upcomingEvents } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 
 export default function Home() {
@@ -61,8 +61,8 @@ export default function Home() {
           <div className="pillars">
             {[
               ["code", az ? "Açıq dərslər" : "Open lessons", az ? "Python, pandas, ML əsasları. Pulsuz." : "Python, pandas, ML basics. Free.", "/resurslar"],
-              ["bolt", "Hackathon", az ? "Komanda qur, yarışlarda iştirak et." : "Form a team and compete.", "/yarislar"],
-              ["people", az ? "Mentorluq" : "Mentoring", az ? "CV, LinkedIn və karyera üçün 1:1." : "1:1 help with CVs, LinkedIn and careers.", "/mentorlar"],
+              ["bolt", "Hackathon", az ? "Komanda qur, yarışlarda iştirak et." : "Form a team and compete.", "/tedbirler"],
+              ["people", az ? "Mentorluq" : "Mentoring", az ? "Sənayədən mentorlar, CV və karyera dəstəyi." : "Industry mentors, CV and career support.", "/mentorlar"],
               ["chart", az ? "Layihələr" : "Projects", az ? "Real data ilə işlə, Demo Day-də göstər." : "Work with real data, show it at Demo Day.", "/layiheler"],
             ].map(([ic, h, p, href]) => (
               <Link key={h} href={href} className="panel pillar" style={{ textDecoration: "none" }}><Icon name={ic} /><b>{h}</b><p>{p}</p></Link>
@@ -93,6 +93,11 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {MENTORS.length > 0 && <section>
+        <SecHead eyebrow={t("mentors")} title={az ? "Mentorlarımız" : "Our mentors"} href="/mentorlar" linkText={t("seeAll")} />
+        <div className="mentors">{MENTORS.map((m) => <MentorCard key={m.id} m={m} />)}</div>
+      </section>}
 
       <section>
         <SecHead eyebrow={t("partners")} title={az ? "Birlikdə güclüyük" : "Stronger together"} href="/terefdaslar" linkText={t("seeAll")} />

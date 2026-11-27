@@ -24,7 +24,7 @@ export const STATS = { members: 165, events: 1, faculties: 1, rating: 5 };
 export type Member = { id: string; name: string; role: L; bio: L; photo: string; linkedin?: string };
 export const TEAM: Member[] = [
   { id: "yusif", name: "Yusif Əliyev", photo: "/img/team/yusif.webp",
-    role: l("Lider", "Leader"),
+    role: l("İcma rəhbəri", "Community lead"),
     bio: l("Tərəfdaşlar, mentorlar, universitet rəhbərliyi və digər icmalarla əlaqə. Üzv aktivliyi alqoritmi və icmanın analitikası.",
            "Partners, mentors, university leadership and other communities. Member activity algorithm and community analytics.") },
   { id: "leman", name: "Ləman Bayramova", photo: "/img/team/leman.webp",
@@ -32,7 +32,7 @@ export const TEAM: Member[] = [
     bio: l("CV, LinkedIn, proqramlar və elanlar. Üzvlərə 1:1 dəstək. LinkedIn səhifəsini idarə edir.",
            "CVs, LinkedIn, programs and announcements. 1:1 support for members. Runs the LinkedIn page.") },
   { id: "turqut", name: "Turqut Abbaslı", photo: "/img/team/turqut.webp",
-    role: l("Yarışlar və logistika", "Competitions & logistics"),
+    role: l("Yarışlar və hakatonlar", "Competitions & hackathons"),
     bio: l("Yarışlar, hackathonlar, sessiyalar, otaqlar və logistika. Daxili və xarici şəbəkələşmə.",
            "Competitions, hackathons, sessions, rooms and logistics. Internal and external networking.") },
   { id: "tariel", name: "Tariel Cəbrayılov", photo: "/img/team/tariel.webp",
@@ -40,11 +40,11 @@ export const TEAM: Member[] = [
     bio: l("TikTok və Instagram, aktiv tələbələr haqqında videolar, yeni üzvlərin cəlbi.",
            "TikTok and Instagram, videos about active students, bringing in new members.") },
   { id: "ramile", name: "Ramilə Məmmədli", photo: "/img/team/ramile.webp",
-    role: l("Texnologiya və planlaşdırma", "Tech & planning"),
+    role: l("Texnologiya və sayt", "Tech & website"),
     bio: l("Sayt, açıq dərslər və imtahanlar, yarış sualları, sənədləşmə, arxiv və planlaşdırma.",
            "Website, open lessons and exams, contest questions, documentation, archive and planning.") },
   { id: "zehra", name: "Zəhra Ağayeva", photo: "/img/team/zehra.webp",
-    role: l("Dəstək və üzv cəlbi", "Support & recruitment"),
+    role: l("Ümumi təşkilatçı", "General organiser"),
     bio: l("Ümumi dəstək və yeni üzvlərin cəlbi.", "General support and recruiting new members.") },
 ];
 
@@ -95,7 +95,21 @@ export const COMPETITIONS: { title: L; date: string; kind: L; url: string; statu
 
 export const POSTS: { slug: string; date: string; author: string; title: L; excerpt: L; body: L }[] = [];
 
-export const MENTORS: { id: string; name: string; photo: string; topics: L; slots: string[] }[] = [];
+export type Mentor = { id: string; name: string; photo: string; title: L; topics: L; linkedin?: string; slots: string[] };
+export const MENTORS: Mentor[] = [
+  { id: "ulvi", name: "Ülvi Həsənov", photo: "/img/mentors/ulvi.webp",
+    title: l("Senior BI analitik, Bakı Metropoliteni QSC", "Senior BI analyst, Baku Metro CJSC"),
+    topics: l("Biznes analitikası (BI)", "Business intelligence (BI)"),
+    linkedin: "https://www.linkedin.com/in/hasanov-ulvi", slots: [] },
+  { id: "sevinc", name: "Sevinc Rəhimova", photo: "/img/mentors/sevinc.webp",
+    title: l("Data analitik", "Data analyst"),
+    topics: l("Data analitika, maşın öyrənməsi, AI etikası", "Data analytics, machine learning, AI ethics"),
+    linkedin: "https://www.linkedin.com/in/sevinjrahimova", slots: [] },
+  { id: "sitare", name: "Sitarə Ağayeva", photo: "/img/mentors/sitare.webp",
+    title: l("GenAI, Data Science və MRM mütəxəssisi · GDG Baku təşkilatçısı", "GenAI, Data Science & MRM specialist · GDG Baku organiser"),
+    topics: l("Model validasiyası və audit, GenAI, Data Science", "Model validation and audit, GenAI, Data Science"),
+    linkedin: "https://www.linkedin.com/in/sitar%C9%99-a%C4%9Fayeva-rai%E2%84%A2-7b2212162", slots: [] },
+];
 
 export const BADGES = [
   { id: "first-step", name: l("İlk addım", "First step"), how: l("Qeydiyyatdan keç", "Sign up"), icon: "flag" },
@@ -126,27 +140,22 @@ export const NAV = {
     { href: "/", key: "home", icon: "home" },
     { href: "/haqqimizda", key: "about", icon: "info" },
     { href: "/tedbirler", key: "events", icon: "cal" },
-    { href: "/yol-xeritesi", key: "roadmap", icon: "road" },
+    { href: "/komanda", key: "team", icon: "people" },
+    { href: "/mentorlar", key: "mentors", icon: "user" },
     { href: "/resurslar", key: "resources", icon: "book" },
     { href: "/reytinq", key: "rating", icon: "trophy" },
+    { href: "/elaqe", key: "contact", icon: "mail" },
   ],
+  // "Daha çox" altında, defolt olaraq bağlı. Məzmunu hələ olmayan səhifələr
+  // (yol xəritəsi, yarışlar, quiz, blog, karyera, FAQ və s.) menyuda gizlidir,
+  // amma ünvanları işləyir. Məzmun gələndə bura əlavə et.
   more: [
-    { href: "/komanda", key: "team", icon: "people" },
     { href: "/layiheler", key: "projects", icon: "code" },
-    { href: "/yarislar", key: "competitions", icon: "bolt" },
-    { href: "/komanda-axtar", key: "teamfinder", icon: "search" },
-    { href: "/quiz", key: "quiz", icon: "spark" },
-    { href: "/mentorlar", key: "mentors", icon: "user" },
-    { href: "/karyera", key: "career", icon: "brief" },
     { href: "/xeberler", key: "news", icon: "news" },
-    { href: "/blog", key: "blog", icon: "pen" },
     { href: "/qalereya", key: "gallery", icon: "image" },
-    { href: "/statistika", key: "stats", icon: "chart" },
     { href: "/terefdaslar", key: "partners", icon: "hand" },
     { href: "/nisanlar", key: "badges", icon: "star" },
     { href: "/sertifikat", key: "certificate", icon: "shield" },
-    { href: "/faq", key: "faq", icon: "help" },
     { href: "/rey", key: "feedback", icon: "pen" },
-    { href: "/elaqe", key: "contact", icon: "mail" },
   ],
 } as const;

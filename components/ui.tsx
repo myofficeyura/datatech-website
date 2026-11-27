@@ -1,13 +1,28 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { EVENTS, type EventItem, type L } from "@/lib/data";
+import { EVENTS, type EventItem, type L, type Mentor } from "@/lib/data";
 import { fmtDate, useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { firebaseEnabled } from "@/lib/firebase";
 import { getRecord, setRecord, listRecords, type Rec } from "@/lib/store";
 import { Icon } from "./Icon";
 import { useToast } from "./Shell";
+
+export function MentorCard({ m }: { m: Mentor }) {
+  const { tr, lang } = useLang();
+  return (
+    <article className="panel mentor">
+      <img src={m.photo} alt={m.name} width={88} height={88} />
+      <div>
+        <b>{m.name}</b>
+        <span className="mt">{tr(m.title)}</span>
+        <p>{tr(m.topics)}</p>
+        {m.linkedin && <a href={m.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn{lang === "az" ? " profili" : " profile"} →</a>}
+      </div>
+    </article>
+  );
+}
 
 export function Empty({ text }: { text?: L | string }) {
   const { tr, lang } = useLang();
@@ -37,9 +52,7 @@ export function SecHead({ eyebrow, title, href, linkText }: { eyebrow?: string; 
 
 export function CountUp({ to, decimals = 0 }: { to: number; decimals?: number }) {
   const [v, setV] = useState(to);
-  const started = useRef(false);
   useEffect(() => {
-    if (started.current) return; started.current = true;
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const t0 = performance.now(), dur = 1100;
     let raf = 0;
