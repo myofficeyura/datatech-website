@@ -11,7 +11,7 @@ const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT || 20);
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
 // "gemini-flash-latest" həmişə Google-un ən son Flash modelinə yönəlir, köhnəlmir.
 // Limit (429) və ya model yoxdursa (404) növbəti modelə keçir.
-const GEMINI_MODELS = [process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-2.5-flash", "gemini-flash-latest", "gemini-2.5-flash-lite", "gemini-flash-lite-latest"].filter(Boolean) as string[];
+const GEMINI_MODELS = [process.env.GEMINI_MODEL, "gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-3.8-flash"].filter(Boolean) as string[];
 
 class BusyError extends Error { constructor(public code = "") { super(code); } }
 class ApiError extends Error { constructor(public code: string) { super(code); } }
@@ -31,8 +31,9 @@ async function askGemini(messages: Anthropic.MessageParam[]): Promise<string> {
           ? { maxOutputTokens: 2048, thinkingConfig: { thinkingLevel: "low" } }
           : { maxOutputTokens: 2048, temperature: 0.4 },
       }),
-      signal: AbortSignal.timeout(30000),
-    });
+      signal: AbortSignal.timeout(12000),
+    }).catch((e) => { if (e?.name === "TimeoutError" || e?.name === "AbortError") return null; throw e; });
+    if (!res) { console.error("gemini timeout", model); lastCode = `timeout ${model}`; busy = true; continue; }
     const data = await res.json().catch(() => null);
     if (res.status === 429 || res.status === 503 || res.status === 404) {
       // limit, yüklənmə və ya model yoxdur: növbəti modeli yoxla
