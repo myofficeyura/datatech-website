@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { EVENTS, type EventItem, type L, type Mentor } from "@/lib/data";
 import { fmtDate, useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import { firebaseEnabled } from "@/lib/firebase";
+import { ALLOWED_DOMAIN, firebaseEnabled } from "@/lib/firebase";
 import { getRecord, setRecord, listRecords, type Rec } from "@/lib/store";
 import { Icon } from "./Icon";
 import { useToast } from "./Shell";
@@ -166,17 +166,52 @@ export function LbRows({ rows, meId, pick }: { rows: Rec[]; meId?: string; pick?
 }
 
 export function SignInGate({ children, why }: { children: ReactNode; why?: string }) {
-  const { user, ready, signIn, error } = useAuth();
-  const { t, lang } = useLang();
+  const { user, ready } = useAuth();
+  const { t } = useLang();
   if (!ready) return <div className="empty">{t("loading")}</div>;
   if (user) return <>{children}</>;
+  return <SignInCard why={why} />;
+}
+
+/** Tələbə girişi: BMU e-poçtu + şifrə (qeydiyyat, giriş, şifrə bərpası). Google yalnız admin üçündür. */
+export function SignInCard({ why }: { why?: string }) {
+  const { error, pending, signInEmail, signUpEmail, resetPassword, resendVerify, checkVerified, signInGoogle, signOut } = useAuth();
+  const { lang } = useLang();
+  const [mode, setMode] = useState<"in" | "up">("in");
+  const [busy, setBusy] = useState(false);
+  const [f, setF] = useState({ name: "", email: "", pw: "" });
+  const run = async (fn: () => Promise<void>) => { setBusy(true); try { await fn(); } finally { setBusy(false); } };
+  const dom = ALLOWED_DOMAIN || "std.beu.edu.az";
+
+  if (pending) return (
+    <div className="panel signin-card">
+      <Icon name="mail" size={40} style={{ color: "var(--blue-hi)" }} />
+      <h2>E-poçtunu təsdiqlə</h2>
+      <p className="muted"><b>{pending}</b> ünvanına təsdiq linki göndərdik. Linkə klik et, sonra aşağıdakı düyməni bas. Məktub gəlməyibsə, Spam qovluğuna bax.</p>
+      <button className="btn pri" type="button" disabled={busy} onClick={() => run(checkVerified)}>Təsdiqlədim, davam et</button>
+      <div className="si-links"><button type="button" className="linkbtn" onClick={() => run(resendVerify)}>Linki yenidən göndər</button><button type="button" className="linkbtn" onClick={() => signOut()}>Başqa e-poçt</button></div>
+      {error && <p className="err">{error}</p>}
+    </div>
+  );
+
   return (
     <div className="panel signin-card">
-      <Icon name="user" size={40} style={{ color: "var(--blue-hi)" }} />
-      <h2>{t("signin")}</h2>
-      <p className="muted">{why || (lang === "az" ? "BMU e-poçtunla daxil ol." : "Sign in with your BEU email.")}</p>
-      <button className="btn pri" type="button" onClick={signIn}>{firebaseEnabled ? "Google ilə daxil ol" : (lang === "az" ? "Demo hesabla daxil ol" : "Sign in with demo account")}</button>
+      <div className="seg si-seg">
+        <button type="button" className={mode === "in" ? "on" : ""} onClick={() => setMode("in")}>{lang === "az" ? "Daxil ol" : "Sign in"}</button>
+        <button type="button" className={mode === "up" ? "on" : ""} onClick={() => setMode("up")}>{lang === "az" ? "Qeydiyyat" : "Sign up"}</button>
+      </div>
+      <p className="muted">{why || (mode === "up" ? `BMU e-poçtunla (@${dom}) qeydiyyatdan keç.` : "BMU e-poçtun və şifrənlə daxil ol.")}</p>
+      <form className="si-form" onSubmit={(e) => { e.preventDefault(); run(() => mode === "up" ? signUpEmail(f.name, f.email, f.pw) : signInEmail(f.email, f.pw)); }}>
+        {mode === "up" && <input className="input" required placeholder="Ad və soyad" autoComplete="name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />}
+        <input className="input" required type="email" placeholder={`ad.soyad@${dom}`} autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
+        <input className="input" required type="password" minLength={mode === "up" ? 8 : undefined} placeholder={mode === "up" ? "Şifrə (ən azı 8 simvol)" : "Şifrə"} autoComplete={mode === "up" ? "new-password" : "current-password"} value={f.pw} onChange={(e) => setF({ ...f, pw: e.target.value })} />
+        <button className="btn pri" disabled={busy}>{busy ? "…" : mode === "up" ? "Qeydiyyatdan keç" : "Daxil ol"}</button>
+      </form>
       {error && <p className="err">{error}</p>}
+      <div className="si-links">
+        {mode === "in" && <button type="button" className="linkbtn" onClick={() => run(() => resetPassword(f.email))}>Şifrəni unutmusan?</button>}
+        <button type="button" className="linkbtn si-admin" onClick={() => run(signInGoogle)}>Admin girişi</button>
+      </div>
     </div>
   );
 }

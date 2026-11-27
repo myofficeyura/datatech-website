@@ -12,6 +12,9 @@ import { setTrackAdmin, track } from "@/lib/track";
 const ToastCtx = createContext<(m: string) => void>(() => {});
 export const useToast = () => useContext(ToastCtx);
 
+// Yığılmış menyuda görünən vacib bölmələr.
+const MINI = ["/", "/tedbirler", "/komanda", "/mentorlar", "/reytinq", "/elaqe"];
+
 function initials(n?: string) { return (n || "?").split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase(); }
 
 export function Shell({ children }: { children: ReactNode }) {
@@ -21,6 +24,13 @@ export function Shell({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [sheet, setSheet] = useState(false);
   const [more, setMore] = useState(false);
+  // Sol menyu: yığılanda yalnız vacib bölmələrin ikonları, açılanda hamısı adları ilə.
+  const [mini, setMini] = useState(false);
+  useEffect(() => { setMini(document.documentElement.classList.contains("mini")); }, []);
+  const toggleMini = () => {
+    const n = !mini; setMini(n); document.documentElement.classList.toggle("mini", n);
+    try { localStorage.setItem("dt-rail", n ? "mini" : "full"); } catch {}
+  };
   const [toast, setToast] = useState<string | null>(null);
   const tt = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -64,21 +74,24 @@ export function Shell({ children }: { children: ReactNode }) {
       <div className="field" aria-hidden="true"><div className="blob b1" /><div className="blob b2" /></div>
 
       <aside className="rail" aria-label="Naviqasiya">
-        <Link className="brand" href="/"><img src={logo} alt="" width={27} height={34} /><b>DataTech</b></Link>
+        <div className="rail-head">
+          <Link className="brand" href="/" title="DataTech"><img src={logo} alt="" width={27} height={34} /><b>DataTech</b></Link>
+          <button type="button" className="rail-toggle" onClick={toggleMini} aria-label={mini ? "Menyunu aç" : "Menyunu yığ"} title={mini ? "Menyunu aç" : "Menyunu yığ"} aria-expanded={!mini}><Icon name="sidebar" /></button>
+        </div>
         <div className="scroll">
           <nav className="nav">
-            {NAV.main.map((n) => (
-              <Link key={n.href} href={n.href} className={on(n.href) ? "on" : ""}><Icon name={n.icon} /><span>{t(n.key as DictKey)}</span></Link>
+            {(mini ? NAV.main.filter((n) => MINI.includes(n.href)) : NAV.main).map((n) => (
+              <Link key={n.href} href={n.href} className={on(n.href) ? "on" : ""} title={t(n.key as DictKey)}><Icon name={n.icon} /><span>{t(n.key as DictKey)}</span></Link>
             ))}
-            <button type="button" className="navbtn" onClick={() => setMore((v) => !v)} aria-expanded={more || NAV.more.some((n) => on(n.href))}><Icon name="more" /><span>{t("more")}</span></button>
-            {(more || NAV.more.some((n) => on(n.href))) && NAV.more.map((n) => (
+            {!mini && <button type="button" className="navbtn" onClick={() => setMore((v) => !v)} aria-expanded={more || NAV.more.some((n) => on(n.href))}><Icon name="more" /><span>{t("more")}</span></button>}
+            {!mini && (more || NAV.more.some((n) => on(n.href))) && NAV.more.map((n) => (
               <Link key={n.href} href={n.href} className={"sub " + (on(n.href) ? "on" : "")}><Icon name={n.icon} /><span>{t(n.key as DictKey)}</span></Link>
             ))}
-            {user?.isAdmin && <Link href="/admin" className={on("/admin") ? "on" : ""}><Icon name="settings" /><span>{t("admin")}</span></Link>}
+            {user?.isAdmin && <Link href="/admin" className={on("/admin") ? "on" : ""} title={t("admin")}><Icon name="settings" /><span>{t("admin")}</span></Link>}
           </nav>
         </div>
-        <Tools />
-        <Link className={"cab" + (on("/kabinet") ? " on" : "")} href="/kabinet">
+        {!mini && <Tools />}
+        <Link className={"cab" + (on("/kabinet") ? " on" : "")} href="/kabinet" title={user ? t("cabinet") : t("signin")}>
           <span className="av">{user ? initials(user.name) : <Icon name="user" size={16} />}</span>
           <span>{user ? t("cabinet") : t("signin")}</span>
         </Link>

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#070c1c" };
 
 // Tema rəngi boyamadan əvvəl qoyulur ki, ekran yanıb-sönməsin. Defolt: qaranlıq.
-const themeScript = `try{document.documentElement.dataset.theme=localStorage.getItem('dt-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}`;
+const themeScript = `try{document.documentElement.dataset.theme=localStorage.getItem('dt-theme')||'dark';if(localStorage.getItem('dt-rail')==='mini')document.documentElement.classList.add('mini')}catch(e){document.documentElement.dataset.theme='dark'}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

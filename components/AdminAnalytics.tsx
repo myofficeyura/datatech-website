@@ -124,7 +124,7 @@ export function AnalyticsTab() {
   const signed = new Set(of(cur, "sign_in").concat(of(cur, "sign_up")).map((e) => e.vid));
   const applied = new Set(of(cur, "form_submit").filter((e) => e.label === "applications").map((e) => e.vid));
   const waV = new Set(of(cur, "click_out").filter((e) => (e.target || "").includes("whatsapp")).map((e) => e.vid));
-  const funnel: [string, number][] = [["Ziyarətçi", uniq(pv, "vid")], ["Qoşul səhifəsinə baxan", join.size], ["Google ilə daxil olan", signed.size], ["Müraciət göndərən", applied.size], ["WhatsApp-a keçən", waV.size]];
+  const funnel: [string, number][] = [["Ziyarətçi", uniq(pv, "vid")], ["Qoşul səhifəsinə baxan", join.size], ["Daxil olan", signed.size], ["Müraciət göndərən", applied.size], ["WhatsApp-a keçən", waV.size]];
   const srcName = (s: string) => (s.startsWith("qr:") ? `QR · ${s.slice(3)}` : s);
   const feed = cur.slice(0, 150);
 
