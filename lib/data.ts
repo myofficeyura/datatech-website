@@ -98,10 +98,6 @@ export const POSTS: { slug: string; date: string; author: string; title: L; exce
 
 export type Mentor = { id: string; name: string; photo: string; title: L; topics: L; linkedin?: string; slots: string[] };
 export const MENTORS: Mentor[] = [
-  { id: "ulvi", name: "Ülvi Həsənov", photo: "/img/mentors/ulvi.webp",
-    title: l("Senior BI analitik, Bakı Metropoliteni QSC", "Senior BI analyst, Baku Metro CJSC"),
-    topics: l("Biznes analitikası (BI)", "Business intelligence (BI)"),
-    linkedin: "https://www.linkedin.com/in/hasanov-ulvi", slots: [] },
   { id: "sevinc", name: "Sevinc Rəhimova", photo: "/img/mentors/sevinc.webp",
     title: l("Data analitik", "Data analyst"),
     topics: l("Data analitika, maşın öyrənməsi, AI etikası", "Data analytics, machine learning, AI ethics"),
@@ -110,6 +106,18 @@ export const MENTORS: Mentor[] = [
     title: l("GenAI, Data Science və MRM mütəxəssisi · GDG Baku təşkilatçısı", "GenAI, Data Science & MRM specialist · GDG Baku organiser"),
     topics: l("Model validasiyası və audit, GenAI, Data Science", "Model validation and audit, GenAI, Data Science"),
     linkedin: "https://www.linkedin.com/in/sitar%C9%99-a%C4%9Fayeva-rai%E2%84%A2-7b2212162", slots: [] },
+  { id: "avaz", name: "Avaz Asgarov", photo: "/img/mentors/avaz.webp",
+    title: l("Data Analytics mentoru · Bakı Ali Neft Məktəbi tələbəsi, “Əlaçı” təqaüdçüsü", "Data Analytics mentor · Baku Higher Oil School student, “Əlaçı” scholar"),
+    topics: l("Data analitika", "Data analytics"),
+    linkedin: "https://www.linkedin.com/in/avaz-asgarov", slots: [] },
+  { id: "nazim", name: "Nazim Aghazada", photo: "/img/mentors/nazim.webp",
+    title: l("Senior AI Products Owner", "Senior AI Products Owner"),
+    topics: l("Conversational və Data AI agentləri, PO və PM mentorluğu", "Conversational and Data AI agents, PO and PM mentoring"),
+    linkedin: "https://www.linkedin.com/in/nazimaghazada", slots: [] },
+  { id: "mahammad", name: "Mahammad Sarkarli", photo: "/img/mentors/mahammad.webp",
+    title: l("Fullstack developer · ERP platformasında team lead", "Fullstack developer · Team lead on an ERP platform"),
+    topics: l("Süni intellekt (AI)", "Artificial intelligence (AI)"),
+    linkedin: "https://www.linkedin.com/in/mahammad-sarkarli-019379341", slots: [] },
 ];
 
 export const BADGES = [
