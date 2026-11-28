@@ -63,9 +63,10 @@ export type EventItem = {
 export const EVENTS: EventItem[] = [
   { slug: "info-gun", title: l("İnfo gün", "Info day"), date: "2026-11-19", time: "12:00–13:00",
     place: l("BMU", "BEU"), type: "info", capacity: 0, registered: 0, past: true, rating: 5.0,
-    gallery: ["/img/gallery/infoday-podium.webp", "/img/gallery/infoday-audience.webp", "/img/gallery/infoday-seated.webp"],
-    desc: l("DataTech-in ilk açıq görüşü. 60+ tələbə iştirak etdi. Yusif Əliyev və Kənan Babazadə icmanı tanıtdı, sonra workshop keçirildi. Hər iştirakçı 5 ulduz verdi.",
-            "DataTech's first open meetup. 60+ students attended. Yusif Əliyev and Kənan Babazadə introduced the community, followed by a workshop. Every attendee gave 5 stars.") },
+    gallery: ["/img/gallery/infoday-podium.webp", "/img/gallery/infoday-audience.webp", "/img/gallery/infoday-seated.webp",
+      "/img/gallery/infoday-winners-1.webp", "/img/gallery/infoday-winners-2.webp", "/img/gallery/infoday-winners-3.webp"],
+    desc: l("DataTech-in ilk açıq görüşü. 60+ tələbə iştirak etdi. Yusif Əliyev icmanı tanıtdı, sonra workshop keçirildi. Hər iştirakçı 5 ulduz verdi.",
+            "DataTech's first open meetup. 60+ students attended. Yusif Əliyev introduced the community, followed by a workshop. Every attendee gave 5 stars.") },
 ];
 
 export type RoadItem = { date: string; title: L; desc: L; tag: "event" | "learn" | "growth" | "milestone" };
